@@ -405,6 +405,39 @@ STATE_INFO getNextState(STATE currentState, char nextSymbol)
     }
 }
 
+void initializeLookupTable()
+{
+    keywordsLookupTable = createTrieNode();
+    insert(keywordsLookupTable, "as", TK_AS);
+    insert(keywordsLookupTable, "call", TK_CALL);
+    insert(keywordsLookupTable, "definetype", TK_DEFINETYPE);
+    insert(keywordsLookupTable, "else", TK_ELSE);
+    insert(keywordsLookupTable, "end", TK_END);
+    insert(keywordsLookupTable, "endunion", TK_ENDUNION);
+    insert(keywordsLookupTable, "endif", TK_ENDIF);
+    insert(keywordsLookupTable, "endrecord", TK_ENDRECORD);
+    insert(keywordsLookupTable, "endwhile", TK_ENDWHILE);
+    insert(keywordsLookupTable, "global", TK_GLOBAL);
+    insert(keywordsLookupTable, "if", TK_IF);
+    insert(keywordsLookupTable, "input", TK_INPUT);
+    insert(keywordsLookupTable, "int", TK_INT);
+    insert(keywordsLookupTable, "list", TK_LIST);
+    insert(keywordsLookupTable, "output", TK_OUTPUT);
+    insert(keywordsLookupTable, "parameter", TK_PARAMETER);
+    insert(keywordsLookupTable, "parameters", TK_PARAMETERS);
+    insert(keywordsLookupTable, "read", TK_READ);
+    insert(keywordsLookupTable, "real", TK_REAL);
+    insert(keywordsLookupTable, "record", TK_RECORD);
+    insert(keywordsLookupTable, "return", TK_RETURN);
+    insert(keywordsLookupTable, "then", TK_THEN);
+    insert(keywordsLookupTable, "type", TK_TYPE);
+    insert(keywordsLookupTable, "union", TK_UNION);
+    insert(keywordsLookupTable, "while", TK_WHILE);
+    insert(keywordsLookupTable, "with", TK_WITH);
+    insert(keywordsLookupTable, "write", TK_WRITE);
+}
+
+
 tokenInfo getNextToken(twinBuffer B)
 {
     
