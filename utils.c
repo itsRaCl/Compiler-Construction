@@ -1,0 +1,597 @@
+#include "lexerDef.h"
+#include "parserDef.h"
+
+grammar initializeGrammar() {
+  grammar G;
+
+  // <program> -> <otherFunctions> <mainFunction>
+  G.rules[NT_PROGRAM][0] = (grammar_rule){
+      .elements = {(grammar_element){false, {.nt = NT_OTHERFUNCTIONS}},
+                   (grammar_element){false, {.nt = NT_MAINFUNCTION}}},
+      .element_count = 2};
+  G.rule_count[NT_PROGRAM] = 1;
+  G.has_epsillon[NT_PROGRAM] = false;
+
+  // <mainFunction> -> TK_MAIN <stmts> TK_END
+  G.rules[NT_MAINFUNCTION][0] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = TK_MAIN}},
+                                  (grammar_element){false, {.nt = NT_STMTS}}},
+                     .element_count = 2};
+  G.rule_count[NT_MAINFUNCTION] = 1;
+  G.has_epsillon[NT_MAINFUNCTION] = false;
+
+  // <otherFunctions> -> <function><otherFunctions> | ε
+  G.rules[NT_OTHERFUNCTIONS][0] = (grammar_rule){
+      .elements = {(grammar_element){false, {.nt = NT_FUNCTION}},
+                   (grammar_element){false, {.nt = NT_OTHERFUNCTIONS}}},
+      .element_count = 2};
+  G.rule_count[NT_OTHERFUNCTIONS] = 1;
+  G.has_epsillon[NT_OTHERFUNCTIONS] = true; // this handles ε
+
+  // <function> -> TK_FUNID <input_par> <output_par> TK_SEM <stmts> TK_END
+  G.rules[NT_FUNCTION][0] = (grammar_rule){
+      .elements = {(grammar_element){true, {.t = TK_FUNID}},
+                   (grammar_element){false, {.nt = NT_INPUT_PAR}},
+                   (grammar_element){false, {.nt = NT_OUTPUT_PAR}},
+                   (grammar_element){true, {.t = TK_SEM}},
+                   (grammar_element){false, {.nt = NT_STMTS}},
+                   (grammar_element){true, {.t = TK_END}}},
+      .element_count = 6};
+  G.rule_count[NT_FUNCTION] = 1;
+  G.has_epsillon[NT_FUNCTION] = false;
+
+  // <input_par> -> TK_INPUT TK_PARAMETER TK_LIST TK_SQL <parameter_list> TK_SQR
+  G.rules[NT_INPUT_PAR][0] = (grammar_rule){
+      .elements = {(grammar_element){true, {.t = TK_INPUT}},
+                   (grammar_element){true, {.t = TK_PARAMETER}},
+                   (grammar_element){true, {.t = TK_LIST}},
+                   (grammar_element){true, {.t = TK_SQL}},
+                   (grammar_element){false, {.nt = NT_PARAMETER_LIST}},
+                   (grammar_element){true, {.t = TK_SQR}}},
+      .element_count = 6};
+  G.rule_count[NT_INPUT_PAR] = 1;
+  G.has_epsillon[NT_INPUT_PAR] = false;
+
+  // <output_par> -> TK_OUTPUT TK_PARAMETER TK_LIST TK_SQL <<parameter_list>
+  // TK_SQR | ε
+  G.rules[NT_OUTPUT_PAR][0] = (grammar_rule){
+      .elements = {(grammar_element){true, {.t = TK_OUTPUT}},
+                   (grammar_element){true, {.t = TK_PARAMETER}},
+                   (grammar_element){true, {.t = TK_LIST}},
+                   (grammar_element){true, {.t = TK_SQL}},
+                   (grammar_element){false, {.nt = NT_PARAMETER_LIST}},
+                   (grammar_element){true, {.t = TK_SQR}}},
+      .element_count = 6};
+  G.rule_count[NT_OUTPUT_PAR] = 1;
+  G.has_epsillon[NT_OUTPUT_PAR] = true;
+
+  // <parameter_list> -> <dataType> TK_ID <remaining_list>
+  G.rules[NT_PARAMETER_LIST][0] = (grammar_rule){
+      .elements = {(grammar_element){false, {.nt = NT_DATATYPE}},
+                   (grammar_element){true, {.t = TK_ID}},
+                   (grammar_element){false, {.nt = NT_REMAINING_LIST}}},
+      .element_count = 3};
+  G.rule_count[NT_PARAMETER_LIST] = 1;
+  G.has_epsillon[NT_OUTPUT_PAR] = false;
+
+  // <dataType> -> <primitiveDatatype> | <constructedDatatype>
+  G.rules[NT_DATATYPE][0] = (grammar_rule){
+      .elements = {(grammar_element){false, {.nt = NT_PRIMITIVEDATATYPE}}},
+      .element_count = 1};
+  G.rules[NT_DATATYPE][1] = (grammar_rule){
+      .elements = {(grammar_element){false, {.nt = NT_CONSTRUCTEDDATATYPE}}},
+      .element_count = 1};
+  G.rule_count[NT_DATATYPE] = 2;
+  G.has_epsillon[NT_DATATYPE] = false;
+
+  // <primitiveDatatype> -> TK_INT | TK_REAL
+  G.rules[NT_PRIMITIVEDATATYPE][0] = (grammar_rule){
+      .elements = {(grammar_element){true, {.t = TK_INT}}}, .element_count = 1};
+  G.rules[NT_PRIMITIVEDATATYPE][1] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = TK_REAL}}},
+                     .element_count = 1};
+  G.rule_count[NT_PRIMITIVEDATATYPE] = 2;
+  G.has_epsillon[NT_PRIMITIVEDATATYPE] = false;
+
+  // <constructedDatatype> -> TK_RECORD TK_RUID | TK_UNION TK_RUID | TK_RUID
+  G.rules[NT_CONSTRUCTEDDATATYPE][0] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = TK_RECORD}},
+                                  (grammar_element){true, {.t = TK_RUID}}},
+                     .element_count = 2};
+  G.rules[NT_CONSTRUCTEDDATATYPE][1] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = TK_UNION}},
+                                  (grammar_element){true, {.t = TK_RUID}}},
+                     .element_count = 2};
+  G.rules[NT_CONSTRUCTEDDATATYPE][2] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = TK_RUID}}},
+                     .element_count = 1};
+  G.rule_count[NT_CONSTRUCTEDDATATYPE] = 3;
+  G.has_epsillon[NT_CONSTRUCTEDDATATYPE] = false;
+
+  // <remaining_list> -> TK_COMMA <parameter_list> | ε
+  G.rules[NT_REMAINING_LIST][0] = (grammar_rule){
+      .elements = {(grammar_element){true, {.t = TK_COMMA}},
+                   (grammar_element){false, {.nt = NT_PARAMETER_LIST}}},
+      .element_count = 2};
+  G.rule_count[NT_REMAINING_LIST] = 1;
+  G.has_epsillon[NT_REMAINING_LIST] = true;
+
+  // <stmts> -> <typeDefinitions> <declatrations> <otherStmts> <returnStmt>
+  G.rules[NT_STMTS][0] = (grammar_rule){
+      .elements = {(grammar_element){false, {.nt = NT_TYPEDEFINITIONS}},
+                   (grammar_element){false, {.nt = NT_DECLATRATIONS}},
+                   (grammar_element){false, {.nt = NT_OTHERSTMTS}},
+                   (grammar_element){false, {.nt = NT_RETURNSTMT}}},
+      .element_count = 4};
+  G.rule_count[NT_STMTS] = 1;
+  G.has_epsillon[NT_STMTS] = false;
+
+  // <typeDefinitions> -> <actualOrRedefined> <typeDefinitions> | ε
+  G.rules[NT_TYPEDEFINITIONS][0] = (grammar_rule){
+      .elements = {(grammar_element){false, {.nt = NT_ACTUALORREDEFINED}},
+                   (grammar_element){false, {.nt = NT_TYPEDEFINITIONS}}},
+      .element_count = 2};
+  G.rule_count[NT_TYPEDEFINITIONS] = 1;
+  G.has_epsillon[NT_TYPEDEFINITIONS] = true;
+
+  // <actualOrRedefined> -> <typeDefinition> | <definetypestmt>
+  G.rules[NT_ACTUALORREDEFINED][0] = (grammar_rule){
+      .elements = {(grammar_element){false, {.nt = NT_TYPEDEFINITION}}},
+      .element_count = 1};
+  G.rules[NT_ACTUALORREDEFINED][1] = (grammar_rule){
+      .elements = {(grammar_element){false, {.nt = NT_DEFINETYPESTMT}}},
+      .element_count = 1};
+  G.rule_count[NT_ACTUALORREDEFINED] = 2;
+  G.has_epsillon[NT_ACTUALORREDEFINED] = false;
+
+  // <typeDefinition> -> TK_RECORD TK_RUID <fieldDefinitions> TK_ENDRECORD
+  // <typeDefinition> -> TK_UNION TK_RUID <fieldDefinitions> TK_ENDUNION
+  G.rules[NT_TYPEDEFINITION][0] = (grammar_rule){
+      .elements = {(grammar_element){true, {.t = TK_RECORD}},
+                   (grammar_element){true, {.t = TK_RUID}},
+                   (grammar_element){false, {.nt = NT_FIELDDEFINITIONS}},
+                   (grammar_element){true, {.t = TK_ENDRECORD}}},
+      .element_count = 4};
+  G.rules[NT_TYPEDEFINITION][1] = (grammar_rule){
+      .elements = {(grammar_element){true, {.t = TK_UNION}},
+                   (grammar_element){true, {.t = TK_RUID}},
+                   (grammar_element){false, {.nt = NT_FIELDDEFINITIONS}},
+                   (grammar_element){true, {.t = TK_ENDUNION}}},
+      .element_count = 4};
+  G.rule_count[NT_TYPEDEFINITION] = 2;
+  G.has_epsillon[NT_TYPEDEFINITION] = false;
+
+  // <fieldDefinitions> -> <fieldDefinition> <fieldDefinition> <moreFields>
+  G.rules[NT_FIELDDEFINITIONS][0] = (grammar_rule){
+      .elements = {(grammar_element){false, {.nt = NT_FIELDDEFINITION}},
+                   (grammar_element){false, {.nt = NT_FIELDDEFINITION}},
+                   (grammar_element){false, {.nt = NT_MOREFIELDS}}},
+      .element_count = 3};
+  G.rule_count[NT_FIELDDEFINITIONS] = 1;
+  G.has_epsillon[NT_FIELDDEFINITIONS] = false;
+
+  // <fieldDefinition> -> TK_TYPE <fieldType> TK_COLON TK_FIELDID TK_SEM
+  G.rules[NT_FIELDDEFINITION][0] = (grammar_rule){
+      .elements = {(grammar_element){true, {.t = TK_TYPE}},
+                   (grammar_element){false, {.nt = NT_FIELDTYPE}},
+                   (grammar_element){true, {.t = TK_COLON}},
+                   (grammar_element){true, {.t = TK_FIELDID}},
+                   (grammar_element){true, {.t = TK_SEM}}},
+      .element_count = 5};
+  G.rule_count[NT_FIELDDEFINITION] = 1;
+  G.has_epsillon[NT_FIELDDEFINITION] = false;
+
+  // <fieldType> -> <primitiveDatatype> | <constructedDatatype>
+  G.rules[NT_FIELDTYPE][0] = (grammar_rule){
+      .elements = {(grammar_element){false, {.nt = NT_PRIMITIVEDATATYPE}}},
+      .element_count = 1};
+  G.rules[NT_FIELDTYPE][1] = (grammar_rule){
+      .elements = {(grammar_element){false, {.nt = NT_CONSTRUCTEDDATATYPE}}},
+      .element_count = 1};
+  G.rule_count[NT_FIELDTYPE] = 2;
+  G.has_epsillon[NT_FIELDTYPE] = false;
+
+  // <moreFields> -> <fieldDefinition> <moreFields> | ε
+  G.rules[NT_MOREFIELDS][0] = (grammar_rule){
+      .elements = {(grammar_element){false, {.nt = NT_FIELDDEFINITION}},
+                   (grammar_element){false, {.nt = NT_MOREFIELDS}}},
+      .element_count = 2};
+  G.rule_count[NT_MOREFIELDS] = 1;
+  G.has_epsillon[NT_MOREFIELDS] = true;
+
+  // <declatrations> -> <declatration> <declatrations> | ε
+  G.rules[NT_DECLATRATIONS][0] = (grammar_rule){
+      .elements = {(grammar_element){false, {.nt = NT_DECLATRATION}},
+                   (grammar_element){false, {.nt = NT_DECLATRATIONS}}},
+      .element_count = 2};
+  G.rule_count[NT_DECLATRATIONS] = 1;
+  G.has_epsillon[NT_DECLATRATIONS] = true;
+
+  // <declatration> -> TK_TYPE <dataType> TK_COLON TK_ID <global_or_not> TK_SEM
+  G.rules[NT_DECLATRATION][0] = (grammar_rule){
+      .elements = {(grammar_element){true, {.t = TK_TYPE}},
+                   (grammar_element){false, {.nt = NT_DATATYPE}},
+                   (grammar_element){true, {.t = TK_COLON}},
+                   (grammar_element){true, {.t = TK_ID}},
+                   (grammar_element){false, {.nt = NT_GLOBAL_OR_NOT}},
+                   (grammar_element){true, {.t = TK_SEM}}},
+      .element_count = 6};
+  G.rule_count[NT_DECLATRATION] = 1;
+  G.has_epsillon[NT_DECLATRATION] = false;
+
+  // <global_or_not> -> TK_COLON TK_GLOBAL | ε
+  G.rules[NT_GLOBAL_OR_NOT][0] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = TK_COLON}},
+                                  (grammar_element){true, {.t = TK_GLOBAL}}},
+                     .element_count = 2};
+  G.rule_count[NT_GLOBAL_OR_NOT] = 1;
+  G.has_epsillon[NT_GLOBAL_OR_NOT] = true;
+
+  //<otherStmts> -> <stmt> <otherStmts> | ε
+  G.rules[NT_OTHERSTMTS][0] = (grammar_rule){
+      .elements = {(grammar_element){false, {.nt = NT_STMT}},
+                   (grammar_element){false, {.nt = NT_OTHERSTMTS}}},
+      .element_count = 2};
+  G.rule_count[NT_OTHERSTMTS] = 1;
+  G.has_epsillon[NT_OTHERSTMTS] = true;
+
+  // <stmt> -> <assignmentStmt> | <iterativeStmt> | <conditionalStmt> | <ioStmt>
+  // | <funCallStmt>
+  G.rules[NT_STMT][0] = (grammar_rule){
+      .elements = {(grammar_element){false, {.nt = NT_ASSIGNMENTSTMT}}},
+      .element_count = 1};
+  G.rules[NT_STMT][1] = (grammar_rule){
+      .elements = {(grammar_element){false, {.nt = NT_ITERATIVESTMT}}},
+      .element_count = 1};
+  G.rules[NT_STMT][2] = (grammar_rule){
+      .elements = {(grammar_element){false, {.nt = NT_CONDITIONALSTMT}}},
+      .element_count = 1};
+  G.rules[NT_STMT][3] =
+      (grammar_rule){.elements = {(grammar_element){false, {.nt = NT_IOSTMT}}},
+                     .element_count = 1};
+  G.rules[NT_STMT][4] = (grammar_rule){
+      .elements = {(grammar_element){false, {.nt = NT_FUNCALLSTMT}}},
+      .element_count = 1};
+  G.rule_count[NT_STMT] = 5;
+  G.has_epsillon[NT_STMT] = false;
+
+  // <assignmentStmt> -> <singleOrRecId> TK_ASSIGNOP <arithmeticExpression>
+  // TK_SEM
+  G.rules[NT_ASSIGNMENTSTMT][0] = (grammar_rule){
+      .elements = {(grammar_element){false, {.nt = NT_SINGLEORRECID}},
+                   (grammar_element){true, {.t = TK_ASSIGNOP}},
+                   (grammar_element){false, {.nt = NT_ARITHMETICEXPRESSION}},
+                   (grammar_element){true, {.t = TK_SEM}}},
+      .element_count = 4};
+  G.rule_count[NT_ASSIGNMENTSTMT] = 1;
+  G.has_epsillon[NT_ASSIGNMENTSTMT] = false;
+
+  // <singleOrRecId> -> TK_ID <option_single_constructed>
+  G.rules[NT_SINGLEORRECID][0] = (grammar_rule){
+      .elements = {(grammar_element){true, {.t = TK_ID}},
+                   (grammar_element){false,
+                                     {.nt = NT_OPTION_SINGLE_CONSTRUCTED}}},
+      .element_count = 2};
+  G.rule_count[NT_SINGLEORRECID] = 1;
+  G.has_epsillon[NT_SINGLEORRECID] = false;
+
+  // <option_single_constructed> -> <oneExpansion> <moreExpansions> | ε
+  G.rules[NT_OPTION_SINGLE_CONSTRUCTED][0] = (grammar_rule){
+      .elements =
+          {
+              (grammar_element){false, {.nt = NT_ONEEXPANSION}},
+              (grammar_element){false, {.nt = NT_MOREEXPANSIONS}},
+          },
+      .element_count = 2};
+  G.rule_count[NT_OPTION_SINGLE_CONSTRUCTED] = 1;
+  G.has_epsillon[NT_OPTION_SINGLE_CONSTRUCTED] = true;
+
+  // <oneExpansion> -> TK_DOT TK_FIELDID
+  G.rules[NT_ONEEXPANSION][0] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = TK_DOT}},
+                                  (grammar_element){true, {.t = TK_FIELDID}}},
+                     .element_count = 2};
+  G.rule_count[NT_ONEEXPANSION] = 1;
+  G.has_epsillon[NT_ONEEXPANSION] = false;
+
+  // <moreExpansions> -> <oneExpansion> <moreExpansions> | ε
+  G.rules[NT_MOREEXPANSIONS][0] = (grammar_rule){
+      .elements = {(grammar_element){false, {.nt = NT_ONEEXPANSION}},
+                   (grammar_element){false, {.nt = NT_MOREEXPANSIONS}}},
+      .element_count = 2};
+  G.rule_count[NT_MOREEXPANSIONS] = 1;
+  G.has_epsillon[NT_MOREEXPANSIONS] = true;
+
+  // <funCallStmt> -> <outputParameters> TK_CALL TK_FUNID TK_WITH TK_PARAMETERS
+  // <inputParameters> TK_SEM
+  G.rules[NT_FUNCALLSTMT][0] = (grammar_rule){
+      .elements = {(grammar_element){false, {.nt = NT_OUTPUTPARAMETERS}},
+                   (grammar_element){true, {.t = TK_CALL}},
+                   (grammar_element){true, {.t = TK_FUNID}},
+                   (grammar_element){true, {.t = TK_WITH}},
+                   (grammar_element){true, {.t = TK_PARAMETERS}},
+                   (grammar_element){false, {.nt = NT_INPUTPARAMETERS}},
+                   (grammar_element){true, {.t = TK_SEM}}},
+      .element_count = 7};
+  G.rule_count[NT_FUNCALLSTMT] = 1;
+  G.has_epsillon[NT_FUNCALLSTMT] = false;
+
+  // <outputParameters> -> TK_SQL <idList> TK_SQR TK_ASSIGNOP | ε
+  G.rules[NT_OUTPUTPARAMETERS][0] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = TK_SQL}},
+                                  (grammar_element){false, {.nt = NT_IDLIST}},
+                                  (grammar_element){true, {.t = TK_SQR}},
+                                  (grammar_element){true, {.t = TK_ASSIGNOP}}},
+                     .element_count = 4};
+  G.rule_count[NT_OUTPUTPARAMETERS] = 1;
+  G.has_epsillon[NT_OUTPUTPARAMETERS] = true;
+
+  // <inputParameters> -> TK_SQL <idList> TK_SQR
+  G.rules[NT_INPUTPARAMETERS][0] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = TK_SQL}},
+                                  (grammar_element){false, {.nt = NT_IDLIST}},
+                                  (grammar_element){true, {.t = TK_SQR}}},
+                     .element_count = 3};
+  G.rule_count[NT_INPUTPARAMETERS] = 1;
+  G.has_epsillon[NT_INPUTPARAMETERS] = false;
+
+  // <iterativeStmt> -> TK_WHILE TK_OP <booleanExpression> TK_CL <stmt>
+  // <otherStmts> TK_ENDWHILE
+  G.rules[NT_ITERATIVESTMT][0] = (grammar_rule){
+      .elements = {(grammar_element){true, {.t = TK_WHILE}},
+                   (grammar_element){true, {.t = TK_OP}},
+                   (grammar_element){false, {.nt = NT_BOOLEANEXPRESSION}},
+                   (grammar_element){true, {.t = TK_CL}},
+                   (grammar_element){false, {.nt = NT_STMT}},
+                   (grammar_element){false, {.nt = NT_OTHERSTMTS}},
+                   (grammar_element){true, {.t = TK_ENDWHILE}}},
+      .element_count = 7};
+  G.rule_count[NT_ITERATIVESTMT] = 1;
+  G.has_epsillon[NT_ITERATIVESTMT] = false;
+
+  // <conditionalStmt> -> TK_IF TK_OP <booleanExpression> TK_CL TK_THEM <stmt>
+  // <otherStmts> <elsePart>
+  G.rules[NT_CONDITIONALSTMT][0] = (grammar_rule){
+      .elements = {(grammar_element){true, {.t = TK_IF}},
+                   (grammar_element){true, {.t = TK_OP}},
+                   (grammar_element){false, {.nt = NT_BOOLEANEXPRESSION}},
+                   (grammar_element){true, {.t = TK_CL}},
+                   (grammar_element){true, {.t = TK_THEN}},
+                   (grammar_element){false, {.nt = NT_STMT}},
+                   (grammar_element){false, {.nt = NT_OTHERSTMTS}},
+                   (grammar_element){false, {.nt = NT_ELSEPART}}},
+      .element_count = 8};
+  G.rule_count[NT_CONDITIONALSTMT] = 1;
+  G.has_epsillon[NT_CONDITIONALSTMT] = false;
+
+  // <elsePart> -> TK_ELSE <stmt> <otherStmts> TK_ENDIF | TK_ENDIF
+  G.rules[NT_ELSEPART][0] =
+      (grammar_rule){.elements =
+                         {
+                             (grammar_element){true, {.t = TK_ELSE}},
+                             (grammar_element){false, {.nt = NT_STMT}},
+                             (grammar_element){false, {.nt = NT_OTHERSTMTS}},
+                             (grammar_element){true, {.t = TK_ENDIF}},
+                         },
+                     .element_count = 4};
+  G.rules[NT_ELSEPART][1] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = TK_ENDIF}}},
+                     .element_count = 1};
+  G.rule_count[NT_ELSEPART] = 2;
+  G.has_epsillon[NT_ELSEPART] = 1;
+
+  // <ioStmt> -> TK_READ TK_OP <var> TK_CL TK_SEM | TK_WRITE TK_OP <var> TK_CL
+  // TK_SEM
+  G.rules[NT_IOSTMT][0] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = TK_READ}},
+                                  (grammar_element){true, {.t = TK_OP}},
+                                  (grammar_element){false, {.nt = NT_VAR}},
+                                  (grammar_element){true, {.t = TK_CL}},
+                                  (grammar_element){true, {.t = TK_SEM}}},
+                     .element_count = 5};
+  G.rules[NT_IOSTMT][1] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = TK_WRITE}},
+                                  (grammar_element){true, {.t = TK_OP}},
+                                  (grammar_element){false, {.nt = NT_VAR}},
+                                  (grammar_element){true, {.t = TK_CL}},
+                                  (grammar_element){true, {.t = TK_SEM}}},
+                     .element_count = 5};
+  G.rule_count[NT_IOSTMT] = 2;
+  G.has_epsillon[NT_IOSTMT] = false;
+
+  // <arithmeticExpression> -> <term> <expPrime>
+  G.rules[NT_ARITHMETICEXPRESSION][0] = (grammar_rule){
+      .elements = {(grammar_element){false, {.nt = NT_TERM}},
+                   (grammar_element){false, {.nt = NT_EXPPRIME}}},
+      .element_count = 2};
+  G.rule_count[NT_ARITHMETICEXPRESSION] = 1;
+  G.has_epsillon[NT_ARITHMETICEXPRESSION] = false;
+
+  // <expPrime> -> <lowPrecedenceOperators> <term> <termPrime> | ε
+  G.rules[NT_EXPPRIME][0] = (grammar_rule){
+      .elements = {(grammar_element){false, {.nt = NT_LOWPRECEDENCEOPERATORS}},
+                   (grammar_element){false, {.nt = NT_TERM}},
+                   (grammar_element){false, {.nt = NT_TERMPRIME}}},
+      .element_count = 3};
+  G.rule_count[NT_EXPPRIME] = 1;
+  G.has_epsillon[NT_EXPPRIME] = true;
+
+  // <term> -> <factor> <termPrime>
+  G.rules[NT_TERM][0] = (grammar_rule){
+      .elements = {(grammar_element){false, {.nt = NT_FACTOR}},
+                   (grammar_element){false, {.nt = NT_TERMPRIME}}},
+      .element_count = 2};
+  G.rule_count[NT_TERM] = 1;
+  G.has_epsillon[NT_TERM] = false;
+
+  // <termPrime> -> <highPrecedenceOperators> <factor> <termPrime> | ε
+  G.rules[NT_TERMPRIME][0] = (grammar_rule){
+      .elements = {(grammar_element){false, {.nt = NT_HIGHPRECEDENCEOPERATORS}},
+                   (grammar_element){false, {.nt = NT_FACTOR}},
+                   (grammar_element){false, {.nt = NT_TERMPRIME}}},
+      .element_count = 3};
+  G.rule_count[NT_TERMPRIME] = 1;
+  G.has_epsillon[NT_TERMPRIME] = true;
+
+  // <factor> -> TK_OP <arithmeticExpression> TK_CL | <var>
+  G.rules[NT_FACTOR][0] = (grammar_rule){
+      .elements = {(grammar_element){true, {.t = TK_OP}},
+                   (grammar_element){false, {.nt = NT_ARITHMETICEXPRESSION}},
+                   (grammar_element){true, {.t = TK_CL}}},
+      .element_count = 3};
+  G.rules[NT_FACTOR][1] =
+      (grammar_rule){.elements = {(grammar_element){true, {.nt = NT_VAR}}},
+                     .element_count = 1};
+  G.rule_count[NT_FACTOR] = 2;
+  G.has_epsillon[NT_FACTOR] = false;
+
+  // <highPrecedenceOperators> -> TK_MUL | TK_DIV
+  G.rules[NT_HIGHPRECEDENCEOPERATORS][0] =
+      (grammar_rule){.elements =
+                         {
+                             (grammar_element){true, {.t = TK_MUL}},
+                         },
+                     .element_count = 1};
+  G.rules[NT_HIGHPRECEDENCEOPERATORS][1] =
+      (grammar_rule){.elements =
+                         {
+                             (grammar_element){true, {.t = TK_DIV}},
+                         },
+                     .element_count = 1};
+  G.rule_count[NT_HIGHPRECEDENCEOPERATORS] = 2;
+  G.has_epsillon[NT_HIGHPRECEDENCEOPERATORS] = false;
+
+  // <lowPrecedenceOperators> -> TK_PLUS | TK_MINUS
+  G.rules[NT_LOWPRECEDENCEOPERATORS][0] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = TK_PLUS}}},
+                     .element_count = 1};
+  G.rules[NT_LOWPRECEDENCEOPERATORS][1] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = TK_MINUS}}},
+                     .element_count = 1};
+  G.rule_count[NT_LOWPRECEDENCEOPERATORS] = 2;
+  G.has_epsillon[NT_LOWPRECEDENCEOPERATORS] = false;
+
+  // <booleanExpression> -> TK_OP <booleanExpression> TK_CL <logicalOp> TK_OP
+  // <booleanExpression> TK_CL
+  // <booleanExpression> -> <var> <relationalOp> <var>
+  // <booleanExpression> -> TK_NOT TK_OP <booleanExpression> TK_CL
+  G.rules[NT_BOOLEANEXPRESSION][0] = (grammar_rule){
+      .elements = {(grammar_element){true, {.t = TK_OP}},
+                   (grammar_element){false, {.nt = NT_BOOLEANEXPRESSION}},
+                   (grammar_element){true, {.t = TK_CL}},
+                   (grammar_element){false, {.nt = NT_LOGICALOP}},
+                   (grammar_element){true, {.t = TK_OP}},
+                   (grammar_element){false, {.nt = NT_BOOLEANEXPRESSION}},
+                   (grammar_element){true, {.t = TK_CL}}},
+      .element_count = 7};
+  G.rules[NT_BOOLEANEXPRESSION][1] = (grammar_rule){
+      .elements = {(grammar_element){false, {.nt = NT_VAR}},
+                   (grammar_element){false, {.nt = NT_RELATIONALOP}},
+                   (grammar_element){false, {.nt = NT_VAR}}},
+      .element_count = 3};
+  G.rules[NT_BOOLEANEXPRESSION][2] = (grammar_rule){
+      .elements = {(grammar_element){true, {.t = TK_NOT}},
+                   (grammar_element){true, {.t = TK_OP}},
+                   (grammar_element){false, {.nt = NT_BOOLEANEXPRESSION}},
+                   (grammar_element){true, {.t = TK_CL}}},
+      .element_count = 4};
+  G.rule_count[NT_BOOLEANEXPRESSION] = 3;
+  G.has_epsillon[NT_BOOLEANEXPRESSION] = false;
+
+  // <var> -> <singleOrRecId> | TK_NUM | TK_RNUM
+  G.rules[NT_VAR][0] = (grammar_rule){
+      .elements = {(grammar_element){false, {.nt = NT_SINGLEORRECID}}},
+      .element_count = 1};
+  G.rules[NT_VAR][1] = (grammar_rule){
+      .elements = {(grammar_element){true, {.t = TK_NUM}}},
+      .element_count = 1,
+  };
+  G.rules[NT_VAR][2] = (grammar_rule){
+      .elements = {(grammar_element){true, {.t = TK_RNUM}}},
+      .element_count = 1,
+  };
+  G.rule_count[NT_VAR] = 3;
+  G.has_epsillon[NT_VAR] = false;
+
+  // <logicalOp> -> TK_AND | TK_OR
+  G.rules[NT_LOGICALOP][0] = (grammar_rule){
+      .elements = {(grammar_element){true, {.t = TK_AND}}}, .element_count = 1};
+  G.rules[NT_LOGICALOP][1] = (grammar_rule){
+      .elements = {(grammar_element){true, {.t = TK_OR}}}, .element_count = 1};
+  G.rule_count[NT_LOGICALOP] = 2;
+  G.has_epsillon[NT_LOGICALOP] = false;
+
+  // <relationalOp> -> TK_LT | TK_LE | TK_EQ | TK_GT | TK_GE | TK_NE
+  G.rules[NT_RELATIONALOP][0] = (grammar_rule){
+      .elements = {(grammar_element){true, {.t = TK_LT}}}, .element_count = 1};
+  G.rules[NT_RELATIONALOP][1] = (grammar_rule){
+      .elements = {(grammar_element){true, {.t = TK_LE}}}, .element_count = 1};
+  G.rules[NT_RELATIONALOP][2] = (grammar_rule){
+      .elements = {(grammar_element){true, {.t = TK_EQ}}}, .element_count = 1};
+  G.rules[NT_RELATIONALOP][3] = (grammar_rule){
+      .elements = {(grammar_element){true, {.t = TK_GT}}}, .element_count = 1};
+  G.rules[NT_RELATIONALOP][4] = (grammar_rule){
+      .elements = {(grammar_element){true, {.t = TK_GE}}}, .element_count = 1};
+  G.rules[NT_RELATIONALOP][5] = (grammar_rule){
+      .elements = {(grammar_element){true, {.t = TK_NE}}}, .element_count = 1};
+
+  G.rule_count[NT_RELATIONALOP] = 6;
+  G.has_epsillon[NT_RELATIONALOP] = false;
+
+  // <returnStmt> -> TK_RETURN <optionalReturn> TK_SEM
+  G.rules[NT_RETURNSTMT][0] = (grammar_rule){
+      .elements = {(grammar_element){true, {.t = TK_RETURN}},
+                   (grammar_element){false, {.nt = NT_OPTIONALRETURN}},
+                   (grammar_element){true, {.t = TK_SEM}}},
+      .element_count = 3};
+  G.rule_count[NT_RETURNSTMT] = 1;
+  G.has_epsillon[NT_RETURNSTMT] = false;
+
+  // <optionalReturn> -> TK_SQL <idList> TK_SQR | ε
+  G.rules[NT_OPTIONALRETURN][0] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = TK_SQL}},
+                                  (grammar_element){false, {.nt = NT_IDLIST}},
+                                  (grammar_element){true, {.t = TK_SQR}}},
+                     .element_count = 3};
+  G.rule_count[NT_OPTIONALRETURN] = 1;
+  G.has_epsillon[NT_OPTIONALRETURN] = true;
+
+  // <idList> -> TK_ID <more_ids>
+  G.rules[NT_IDLIST][0] = (grammar_rule){
+      .elements = {(grammar_element){true, {.t = TK_ID}},
+                   (grammar_element){false, {.nt = NT_MORE_IDS}}},
+      .element_count = 2};
+  G.rule_count[NT_IDLIST] = 1;
+  G.has_epsillon[NT_IDLIST] = false;
+
+  // <more_ids> -> TK_COMMA <idList> | ε
+  G.rules[NT_MORE_IDS][0] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = TK_COMMA}},
+                                  (grammar_element){false, {.nt = NT_IDLIST}}},
+                     .element_count = 2};
+  G.rule_count[NT_MORE_IDS] = 1;
+  G.has_epsillon[NT_MORE_IDS] = true;
+
+  // <definetypestmt> -> TK_DEFINETYPE <A> TK_RUID TK_AS TK_RUID
+  G.rules[NT_DEFINETYPESTMT][0] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = TK_DEFINETYPE}},
+                                  (grammar_element){false, {.nt = NT_A}},
+                                  (grammar_element){true, {.t = TK_RUID}},
+                                  (grammar_element){true, {.t = TK_AS}},
+                                  (grammar_element){true, {.t = TK_RUID}}},
+                     .element_count = 5};
+  G.rule_count[NT_DEFINETYPESTMT] = 1;
+  G.has_epsillon[NT_DEFINETYPESTMT] = false;
+
+  //<A> -> TK_RECORD | TK_UNION
+  G.rules[NT_A][0] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = TK_RECORD}}},
+                     .element_count = 1};
+  G.rules[NT_A][1] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = TK_UNION}}},
+                     .element_count = 1};
+  G.rule_count[NT_A] = 2;
+  G.has_epsillon[NT_A] = false;
+
+  return G;
+}
