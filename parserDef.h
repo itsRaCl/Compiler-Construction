@@ -1,9 +1,10 @@
 #ifndef PARSER_DEF
 #define PARSER_DEF
-#endif
 
 #include "lexerDef.h"
 
+#define NON_TERMINAL_COUNT 53
+#define MAX_RULE_SIZE 10
 typedef enum {
   NT_PROGRAM,
   NT_MAINFUNCTION,
@@ -58,8 +59,6 @@ typedef enum {
   NT_MORE_IDS,
   NT_DEFINETYPESTMT,
   NT_A,
-  EPSILLON,
-  NULL_NT, // only to be used for grammar_rule_element
 } NON_TERMINAL;
 
 typedef struct {
@@ -71,12 +70,21 @@ typedef struct {
 } grammar_element;
 
 typedef struct {
-  grammar_element elements[10];
+  grammar_element elements[MAX_RULE_SIZE];
   int element_count;
 } grammar_rule;
 
 typedef struct {
-  grammar_rule rules[53][10];
-  int rule_count[53];
-  bool has_epsillon[53];
+  grammar_rule rules[NON_TERMINAL_COUNT][MAX_RULE_SIZE];
+  int rule_count[NON_TERMINAL_COUNT];
+  bool has_epsillon[NON_TERMINAL_COUNT];
 } grammar;
+
+typedef struct {
+  TOKEN_TYPE first[NON_TERMINAL_COUNT][MAX_RULE_SIZE];
+  int first_count[NON_TERMINAL_COUNT];
+
+  // TOKEN_TYPE follow[NON_TERMINAL_COUNT][MAX_RULE_SIZE];
+  // int follow_count[NON_TERMINAL_COUNT];
+} FirstFollow;
+#endif

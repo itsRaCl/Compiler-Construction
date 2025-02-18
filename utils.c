@@ -1,6 +1,101 @@
 #include "lexerDef.h"
 #include "parserDef.h"
 
+bool hasEpsillon(FirstFollow *ff, NON_TERMINAL nt) {
+  for (int i = 0; i < ff->first_count[nt]; i++) {
+    if (ff->first[nt][i] == EPSILLON) {
+      return true;
+    }
+  }
+  return false;
+}
+void firstUnion(FirstFollow *ff, NON_TERMINAL nt1, NON_TERMINAL nt2) {
+
+  int nt1_next = ff->first_count[nt1];
+
+  for (int i = 0; i < ff->first_count[nt2]; i++) {
+    TOKEN_TYPE tok = ff->first[nt2][i];
+    if (tok == EPSILLON) {
+      continue;
+    }
+    int j;
+    for (j = 0; j < nt1_next; j++) {
+      if (ff->first[nt1][j] == ff->first[nt2][i]) {
+        break;
+      }
+    }
+    if (j == nt1_next) {
+      ff->first[nt1][nt1_next] = ff->first[nt2][i];
+      nt1_next++;
+    }
+  }
+  ff->first_count[nt1] = nt1_next;
+}
+
+void computeFirstRec(FirstFollow *ff, NON_TERMINAL nt, grammar G,
+                     bool *firstComputed) {
+  if (firstComputed[nt]) {
+    return;
+  }
+
+  // for every production rule for NON_TERMINAL nt
+  for (int rule_no = 0; rule_no < G.rule_count[nt]; rule_no++) {
+    grammar_rule rule = G.rules[nt][rule_no];
+    int j = 0;
+
+    // iterate throught elements of the rule
+    while (j < rule.element_count) {
+
+      // if a terminal is found then add terminal to first set and stop
+      if (rule.elements[j].terminal) {
+        ff->first[nt][(ff->first_count[nt])++] = rule.elements[j].var.t;
+        break;
+      }
+
+      NON_TERMINAL curr = rule.elements[j].var.nt;
+
+      // current element is non terminal, compute first for that non terminal
+      computeFirstRec(ff, curr, G, firstComputed);
+
+      // compute union of first set of curr non terminal with first set of non
+      // terminal with first set of nt
+      firstUnion(ff, nt, curr);
+
+      // if curr non terminal does not have epsillon in rule then stop loop
+      if (!hasEpsillon(ff, curr)) {
+        break;
+      }
+      j++;
+    }
+  }
+
+  // if P -> ε is a production then add ε to First(P)
+  if (G.has_epsillon[nt] && !hasEpsillon(ff, nt)) {
+    ff->first[nt][(ff->first_count[nt])++] = EPSILLON;
+  }
+
+  // mark non terminal as computed
+  firstComputed[nt] = true;
+}
+
+FirstFollow computeFirstFollowSet(grammar G) {
+  FirstFollow ff;
+
+  bool computed[NON_TERMINAL_COUNT];
+  for (int i = 0; i < NON_TERMINAL_COUNT; i++) {
+    ff.first_count[i] = 0;
+    /*ff.follow_count[i] = 0;*/
+    computed[i] = false;
+  }
+
+  // Computing First Set for all Non Terminals
+  for (int i = 0; i < NON_TERMINAL_COUNT; i++) {
+    computeFirstRec(&ff, (NON_TERMINAL)i, G, computed);
+  }
+
+  return ff;
+}
+
 grammar initializeGrammar() {
   grammar G;
 
@@ -15,8 +110,9 @@ grammar initializeGrammar() {
   // <mainFunction> -> TK_MAIN <stmts> TK_END
   G.rules[NT_MAINFUNCTION][0] =
       (grammar_rule){.elements = {(grammar_element){true, {.t = TK_MAIN}},
-                                  (grammar_element){false, {.nt = NT_STMTS}}},
-                     .element_count = 2};
+                                  (grammar_element){false, {.nt = NT_STMTS}},
+                                  (grammar_element){true, {.t = TK_END}}},
+                     .element_count = 3};
   G.rule_count[NT_MAINFUNCTION] = 1;
   G.has_epsillon[NT_MAINFUNCTION] = false;
 
@@ -40,7 +136,8 @@ grammar initializeGrammar() {
   G.rule_count[NT_FUNCTION] = 1;
   G.has_epsillon[NT_FUNCTION] = false;
 
-  // <input_par> -> TK_INPUT TK_PARAMETER TK_LIST TK_SQL <parameter_list> TK_SQR
+  // <input_par> -> TK_INPUT TK_PARAMETER TK_LIST TK_SQL <parameter_list>
+  // TK_SQR
   G.rules[NT_INPUT_PAR][0] = (grammar_rule){
       .elements = {(grammar_element){true, {.t = TK_INPUT}},
                    (grammar_element){true, {.t = TK_PARAMETER}},
@@ -72,7 +169,7 @@ grammar initializeGrammar() {
                    (grammar_element){false, {.nt = NT_REMAINING_LIST}}},
       .element_count = 3};
   G.rule_count[NT_PARAMETER_LIST] = 1;
-  G.has_epsillon[NT_OUTPUT_PAR] = false;
+  G.has_epsillon[NT_PARAMETER_LIST] = false;
 
   // <dataType> -> <primitiveDatatype> | <constructedDatatype>
   G.rules[NT_DATATYPE][0] = (grammar_rule){
@@ -207,7 +304,8 @@ grammar initializeGrammar() {
   G.rule_count[NT_DECLATRATIONS] = 1;
   G.has_epsillon[NT_DECLATRATIONS] = true;
 
-  // <declatration> -> TK_TYPE <dataType> TK_COLON TK_ID <global_or_not> TK_SEM
+  // <declatration> -> TK_TYPE <dataType> TK_COLON TK_ID <global_or_not>
+  // TK_SEM
   G.rules[NT_DECLATRATION][0] = (grammar_rule){
       .elements = {(grammar_element){true, {.t = TK_TYPE}},
                    (grammar_element){false, {.nt = NT_DATATYPE}},
@@ -235,8 +333,8 @@ grammar initializeGrammar() {
   G.rule_count[NT_OTHERSTMTS] = 1;
   G.has_epsillon[NT_OTHERSTMTS] = true;
 
-  // <stmt> -> <assignmentStmt> | <iterativeStmt> | <conditionalStmt> | <ioStmt>
-  // | <funCallStmt>
+  // <stmt> -> <assignmentStmt> | <iterativeStmt> | <conditionalStmt> |
+  // <ioStmt> | <funCallStmt>
   G.rules[NT_STMT][0] = (grammar_rule){
       .elements = {(grammar_element){false, {.nt = NT_ASSIGNMENTSTMT}}},
       .element_count = 1};
@@ -302,8 +400,8 @@ grammar initializeGrammar() {
   G.rule_count[NT_MOREEXPANSIONS] = 1;
   G.has_epsillon[NT_MOREEXPANSIONS] = true;
 
-  // <funCallStmt> -> <outputParameters> TK_CALL TK_FUNID TK_WITH TK_PARAMETERS
-  // <inputParameters> TK_SEM
+  // <funCallStmt> -> <outputParameters> TK_CALL TK_FUNID TK_WITH
+  // TK_PARAMETERS <inputParameters> TK_SEM
   G.rules[NT_FUNCALLSTMT][0] = (grammar_rule){
       .elements = {(grammar_element){false, {.nt = NT_OUTPUTPARAMETERS}},
                    (grammar_element){true, {.t = TK_CALL}},
@@ -378,7 +476,7 @@ grammar initializeGrammar() {
       (grammar_rule){.elements = {(grammar_element){true, {.t = TK_ENDIF}}},
                      .element_count = 1};
   G.rule_count[NT_ELSEPART] = 2;
-  G.has_epsillon[NT_ELSEPART] = 1;
+  G.has_epsillon[NT_ELSEPART] = false;
 
   // <ioStmt> -> TK_READ TK_OP <var> TK_CL TK_SEM | TK_WRITE TK_OP <var> TK_CL
   // TK_SEM
@@ -440,7 +538,7 @@ grammar initializeGrammar() {
                    (grammar_element){true, {.t = TK_CL}}},
       .element_count = 3};
   G.rules[NT_FACTOR][1] =
-      (grammar_rule){.elements = {(grammar_element){true, {.nt = NT_VAR}}},
+      (grammar_rule){.elements = {(grammar_element){false, {.nt = NT_VAR}}},
                      .element_count = 1};
   G.rule_count[NT_FACTOR] = 2;
   G.has_epsillon[NT_FACTOR] = false;
@@ -592,6 +690,5 @@ grammar initializeGrammar() {
                      .element_count = 1};
   G.rule_count[NT_A] = 2;
   G.has_epsillon[NT_A] = false;
-
   return G;
 }
