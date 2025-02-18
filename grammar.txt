@@ -9,7 +9,7 @@
 
 <input_par> -> TK_INPUT TK_PARAMETER TK_LIST TK_SQL <parameter_list> TK_SQR
 
-<output_par> -> TK_OUTPUT TK_PARAMETER TK_LIST TK_SQL <<parameter_list> TK_SQL | ε
+<output_par> -> TK_OUTPUT TK_PARAMETER TK_LIST TK_SQL <parameter_list> TK_SQR | ε
 
 <parameter_list> -> <dataType> TK_ID <remaining_list>
 
@@ -29,7 +29,7 @@
 
 <typeDefinition> -> TK_RECORD TK_RUID <fieldDefinitions> TK_ENDRECORD
 
-<typeDefinitions> -> TK_UNION TK_RUID <fieldDefinitions> TK_ENDUNION
+<typeDefinition> -> TK_UNION TK_RUID <fieldDefinitions> TK_ENDUNION
 
 <fieldDefinitions> -> <fieldDefinition> <fieldDefinition> <moreFields>
 
