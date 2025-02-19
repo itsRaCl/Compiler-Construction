@@ -75,7 +75,7 @@
 
 <arithmeticExpression> -> <term> <expPrime>
 
-<expPrime> -> <lowPrecedenceOperators> <term> <termPrime> | ε
+<expPrime> -> <lowPrecedenceOperators> <term> <expPrime> | ε
 
 <term> -> <factor> <termPrime>
 
