@@ -143,7 +143,8 @@ typedef enum TOKEN_TYPE {
   TK_GE,
   TK_NE,
   NULL_TOKEN,
-  EPSILLON
+  EPSILLON, // Used in FirstFollow computation
+  DOLLAR,   // Used in FirstFollow computation
 } TOKEN_TYPE;
 
 typedef struct TOKEN {

@@ -4,7 +4,7 @@
 #include "lexerDef.h"
 
 #define NON_TERMINAL_COUNT 53
-#define MAX_RULE_SIZE 10
+#define MAX_RULE_SIZE 15
 typedef enum {
   NT_PROGRAM,
   NT_MAINFUNCTION,
@@ -84,7 +84,7 @@ typedef struct {
   TOKEN_TYPE first[NON_TERMINAL_COUNT][MAX_RULE_SIZE];
   int first_count[NON_TERMINAL_COUNT];
 
-  // TOKEN_TYPE follow[NON_TERMINAL_COUNT][MAX_RULE_SIZE];
-  // int follow_count[NON_TERMINAL_COUNT];
+  TOKEN_TYPE follow[NON_TERMINAL_COUNT][MAX_RULE_SIZE];
+  int follow_count[NON_TERMINAL_COUNT];
 } FirstFollow;
 #endif

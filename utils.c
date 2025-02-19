@@ -1,5 +1,6 @@
 #include "lexerDef.h"
 #include "parserDef.h"
+#include <stdlib.h>
 
 bool hasEpsillon(FirstFollow *ff, NON_TERMINAL nt) {
   for (int i = 0; i < ff->first_count[nt]; i++) {
@@ -78,19 +79,123 @@ void computeFirstRec(FirstFollow *ff, NON_TERMINAL nt, grammar G,
   firstComputed[nt] = true;
 }
 
+void followAdd(FirstFollow *ff, NON_TERMINAL nt, TOKEN_TYPE t) {
+  for (int i = 0; i < ff->follow_count[nt]; i++) {
+    if (ff->follow[nt][i] == t) {
+      return;
+    }
+  }
+  ff->follow[nt][(ff->follow_count[nt])++] = t;
+  return;
+}
+
+void followDepAdd(NON_TERMINAL nt, NON_TERMINAL a, NON_TERMINAL **followDep,
+                  int *depCount) {
+  for (int i = 0; i < depCount[nt]; i++) {
+    if (followDep[nt][i] == a)
+      return;
+  }
+  followDep[nt][(depCount[nt])++] = a;
+  return;
+}
+
+void followHelper(FirstFollow *ff, grammar_rule rule, NON_TERMINAL LHS,
+                  NON_TERMINAL **followDep, int *depCount) {
+
+  for (int i = 0; i < rule.element_count - 1; i++) {
+
+    if (rule.elements[i].terminal) {
+      continue;
+    }
+
+    NON_TERMINAL nt = rule.elements[i].var.nt;
+
+    int j;
+    for (j = i + 1; j < rule.element_count; j++) {
+      if (rule.elements[j].terminal) {
+        followAdd(ff, nt, rule.elements[j].var.t);
+        break;
+      }
+
+      NON_TERMINAL curr = rule.elements[j].var.nt;
+      for (int k = 0; k < ff->first_count[curr]; k++) {
+        if (ff->first[curr][k] == EPSILLON)
+          continue;
+        followAdd(ff, nt, ff->first[curr][k]);
+      }
+      if (!hasEpsillon(ff, curr)) {
+        break;
+      }
+    }
+
+    if (j == rule.element_count) {
+      followDepAdd(nt, LHS, followDep, depCount);
+    }
+  }
+
+  if (!(rule.elements[rule.element_count - 1].terminal)) {
+    followDepAdd(rule.elements[rule.element_count - 1].var.nt, LHS, followDep,
+                 depCount);
+  }
+
+  return;
+}
+
+void clearDependency(NON_TERMINAL nt, NON_TERMINAL **followDep, int *depCount,
+                     FirstFollow *ff) {
+  if (depCount[nt] == 0)
+    return;
+  int i = 0;
+  while (depCount[nt] > 0) {
+    NON_TERMINAL dep = followDep[nt][i];
+    depCount[nt]--;
+    i++;
+    clearDependency(dep, followDep, depCount, ff);
+
+    for (int j = 0; j < ff->follow_count[dep]; j++) {
+      followAdd(ff, nt, ff->follow[dep][j]);
+    }
+  }
+}
+
 FirstFollow computeFirstFollowSet(grammar G) {
   FirstFollow ff;
 
-  bool computed[NON_TERMINAL_COUNT];
+  bool firstComputed[NON_TERMINAL_COUNT];
+  NON_TERMINAL **followDep;
+  followDep =
+      (NON_TERMINAL **)malloc(sizeof(NON_TERMINAL *) * NON_TERMINAL_COUNT);
+
+  int depCount[NON_TERMINAL_COUNT];
+
   for (int i = 0; i < NON_TERMINAL_COUNT; i++) {
     ff.first_count[i] = 0;
-    /*ff.follow_count[i] = 0;*/
-    computed[i] = false;
+    ff.follow_count[i] = 0;
+    firstComputed[i] = false;
+    depCount[i] = 0;
+    followDep[i] = (NON_TERMINAL *)calloc(MAX_RULE_SIZE, sizeof(NON_TERMINAL));
   }
 
   // Computing First Set for all Non Terminals
   for (int i = 0; i < NON_TERMINAL_COUNT; i++) {
-    computeFirstRec(&ff, (NON_TERMINAL)i, G, computed);
+    computeFirstRec(&ff, (NON_TERMINAL)i, G, firstComputed);
+  }
+
+  // Base Follow set for start symbol '<program>'
+  ff.follow[NT_PROGRAM][0] = DOLLAR;
+  ff.follow_count[NT_PROGRAM] = 1;
+
+  // Computing Follow Set for all Non Terminals
+  for (int i = 0; i < NON_TERMINAL_COUNT; i++) {
+    for (int j = 0; j < G.rule_count[i]; j++) {
+      followHelper(&ff, G.rules[i][j], (NON_TERMINAL)i, followDep, depCount);
+    }
+  }
+
+  for (int i = 0; i < NON_TERMINAL_COUNT; i++) {
+    if (depCount[i] > 0) {
+      clearDependency(i, followDep, depCount, &ff);
+    }
   }
 
   return ff;
@@ -447,7 +552,7 @@ grammar initializeGrammar() {
   G.rule_count[NT_ITERATIVESTMT] = 1;
   G.has_epsillon[NT_ITERATIVESTMT] = false;
 
-  // <conditionalStmt> -> TK_IF TK_OP <booleanExpression> TK_CL TK_THEM <stmt>
+  // <conditionalStmt> -> TK_IF TK_OP <booleanExpression> TK_CL TK_THEN <stmt>
   // <otherStmts> <elsePart>
   G.rules[NT_CONDITIONALSTMT][0] = (grammar_rule){
       .elements = {(grammar_element){true, {.t = TK_IF}},
@@ -505,11 +610,11 @@ grammar initializeGrammar() {
   G.rule_count[NT_ARITHMETICEXPRESSION] = 1;
   G.has_epsillon[NT_ARITHMETICEXPRESSION] = false;
 
-  // <expPrime> -> <lowPrecedenceOperators> <term> <termPrime> | ε
+  // <expPrime> -> <lowPrecedenceOperators> <term> <expPrime> | ε
   G.rules[NT_EXPPRIME][0] = (grammar_rule){
       .elements = {(grammar_element){false, {.nt = NT_LOWPRECEDENCEOPERATORS}},
                    (grammar_element){false, {.nt = NT_TERM}},
-                   (grammar_element){false, {.nt = NT_TERMPRIME}}},
+                   (grammar_element){false, {.nt = NT_EXPPRIME}}},
       .element_count = 3};
   G.rule_count[NT_EXPPRIME] = 1;
   G.has_epsillon[NT_EXPPRIME] = true;
