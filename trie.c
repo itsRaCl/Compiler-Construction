@@ -8,7 +8,7 @@ trie createTrieNode()
     {
         node->children[i] = NULL;
     }
-    node->tokenType = NULL_TOKEN;
+    node->tokenType = TK_FIELDID;
     return node;
 }
 
@@ -35,7 +35,7 @@ TOKEN_TYPE search(trie root, char* key)
         int index = key[i] - 'a';
         if (temp->children[index] == NULL)
         {
-            return NULL_TOKEN;
+            return TK_FIELDID;
         }
         temp = temp->children[index];
     }
