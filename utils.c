@@ -33,6 +33,7 @@ void computeFirstRec(FirstFollow *ff, NON_TERMINAL nt, grammar G,
     grammar_rule rule = G.rules[nt][rule_no];
     int j = 0;
 
+    int old_count = ff->first_count[nt];
     // iterate throught elements of the rule
     while (j < rule.element_count) {
 
@@ -55,13 +56,19 @@ void computeFirstRec(FirstFollow *ff, NON_TERMINAL nt, grammar G,
       if (!ff->first_has_epsillon[curr]) {
         break;
       }
+      ff->follow_rule[nt] = rule_no;
       j++;
+    }
+
+    for (int i = old_count; i < ff->first_count[nt]; i++) {
+        ff->rule_no[nt][i] = rule_no;
     }
   }
 
   // if P -> ε is a production then mark first_has_epsillon as true for P
   if (G.has_epsillon[nt] && !ff->first_has_epsillon[nt]) {
     ff->first_has_epsillon[nt] = true;
+    ff->follow_rule[nt] = G.rule_count[nt];
   }
 
   // mark non terminal as computed
@@ -159,6 +166,7 @@ FirstFollow computeFirstFollowSet(grammar G) {
     ff.first_count[i] = 0;
     ff.follow_count[i] = 0;
     ff.first_has_epsillon[i] = false;
+    ff.follow_rule[i] = -1;
     firstComputed[i] = false;
     depCount[i] = 0;
     followDep[i] = (NON_TERMINAL *)calloc(MAX_RULE_SIZE, sizeof(NON_TERMINAL));

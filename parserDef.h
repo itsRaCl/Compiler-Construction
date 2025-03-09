@@ -84,9 +84,11 @@ typedef struct {
   TOKEN_TYPE first[NON_TERMINAL_COUNT][MAX_RULE_SIZE];
   int first_count[NON_TERMINAL_COUNT];
   bool first_has_epsillon[NON_TERMINAL_COUNT];
+  int rule_no[NON_TERMINAL_COUNT][MAX_RULE_SIZE];
 
   TOKEN_TYPE follow[NON_TERMINAL_COUNT][MAX_RULE_SIZE];
   int follow_count[NON_TERMINAL_COUNT];
+  int follow_rule[NON_TERMINAL_COUNT];
 } FirstFollow;
 
 typedef struct {
