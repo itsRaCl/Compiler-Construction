@@ -1,5 +1,8 @@
 #include "lexer.h"
 #include "trie.h"
+#include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
 
 static trie keywordsLookupTable;
 
@@ -79,7 +82,7 @@ STATE_INFO getNextState(STATE currentState, char nextSymbol)
             }
             else if(nextSymbol==EOF)
             {
-                return (STATE_INFO){START, true, EXIT, 0};
+                return (STATE_INFO){START, true, EXIT_TOKEN, 0};
             }
             else if(nextSymbol==':')
             {
@@ -116,6 +119,10 @@ STATE_INFO getNextState(STATE currentState, char nextSymbol)
             else if(nextSymbol=='\n'||nextSymbol=='\t'||nextSymbol==' ')
             {
                 return (STATE_INFO){START, false, NULL_TOKEN, 0};
+            }
+            else if(nextSymbol=='\0')
+            {
+                return (STATE_INFO){START, true, BLANK, 0};
             }
             else
             {
@@ -437,10 +444,189 @@ void initializeLookupTable()
     insert(keywordsLookupTable, "write", TK_WRITE);
 }
 
+bool populate_buffer(twinBuffer B, FILE* fp)
+{
+    if(B->index>=BUFFER_SIZE)
+    {
+        for (int i = 0; i < BUFFER_SIZE; i++)
+        {
+            char ch = fgetc(fp);
+            if(ch==EOF)
+            {
+                // B->buffer[i] = EOF;
+                for (int j = i; j < BUFFER_SIZE; j++)
+                {
+                    B->buffer[j+BUFFER_SIZE] = '\0';
+                }
+                return false;
+            }
+            else if(ch=='\n')
+            {
+                B->buffer[i] = '\n';
+                for (int j = i+1; j < BUFFER_SIZE; j++)
+                {
+                    B->buffer[j+BUFFER_SIZE] = '\0';
+                }
+                return true;
+            }
+            else
+            {
+                B->buffer[i] = ch;
+            }
+        }
+        return false;
+    }
+    else
+    {
+        for (int i = BUFFER_SIZE; i < 2*BUFFER_SIZE; i++)
+        {
+            char ch = fgetc(fp);
+            if(ch==EOF)
+            {
+                // B->buffer[i] = EOF;
+                for (int j = i; j < 2*BUFFER_SIZE; j++)
+                {
+                    B->buffer[j+BUFFER_SIZE] = '\0';
+                }
+                return false;
+            }
+            else if(ch=='\n')
+            {
+                B->buffer[i] = '\n';
+                for (int j = i+1; j < 2*BUFFER_SIZE; j++)
+                {
+                    B->buffer[j+BUFFER_SIZE] = '\0';
+                }
+                return true;
+            }
+            else
+            {
+                B->buffer[i] = ch;
+            }
+        }
+        return true;
+    }
+}
 
 tokenInfo getNextToken(twinBuffer B)
 {
-    
+    STATE currentState = START;
+    int start = B->index;
+    int end = B->index;
+    STATE_INFO nextState = getNextState(currentState, B->buffer[start]);
+    while (!(nextState.isReturningToken||nextState.nextSTATE==INVALID||nextState.nextSTATE==BLANK))
+    {
+        printf("Current state: %d\n", nextState.nextSTATE);
+        end++;
+        end = end%(2*BUFFER_SIZE);
+        nextState = getNextState(nextState.nextSTATE, B->buffer[end]);
+    }
+    if(nextState.nextSTATE==INVALID)
+    {
+        printf("Error: Invalid token\n");
+        B->index = (start+1)%(2*BUFFER_SIZE);
+        return NULL;
+    }
+    else if(nextState.nextSTATE==BLANK)
+    {
+        B->index = (start+1)%(2*BUFFER_SIZE);
+        return NULL;
+    }
+    else
+    {
+        printf("Token found\n");
+        int redaction = nextState.redaction;
+        end = (end-redaction+2*BUFFER_SIZE)%(2*BUFFER_SIZE);
+        int size = 0;
+        if(end>=start)
+        {
+            size = end-start+1;
+        }
+        else
+        {
+            size = 2*BUFFER_SIZE-start+end+1;
+        }
+        char* lexeme = (char*)malloc(sizeof(char)*size);
+        int i = 0;
+        while (start!=end)
+        {
+            lexeme[i] = B->buffer[start];
+            start++;
+            start = start%(2*BUFFER_SIZE);
+            i++;
+        }
+        lexeme[i] = B->buffer[start];
+        start++;
+        start = start%(2*BUFFER_SIZE);
+        tokenInfo token = (tokenInfo)malloc(sizeof(TOKEN));
+        token->lexeme = lexeme;
+        token->lexemeSize = size;
+        token->line = B->line;
+        if(nextState.tokenType==TK_FIELDID)
+        {
+            token->type = search(keywordsLookupTable, lexeme);
+        }
+        else if(nextState.tokenType==TK_FUNID)
+        {
+            if(strcpy(lexeme, "main")==0)
+            {
+                token->type = TK_MAIN;
+            }
+            else
+            {
+                token->type = TK_FUNID;
+            }
+        }
+        else
+        {
+            token->type = nextState.tokenType;
+        }
+        B->index = start;
+        return token;
+    }
+}
+
+void printbuffer(twinBuffer B)
+{
+    for (int i = 0; i < 2*BUFFER_SIZE; i++)
+    {
+        printf("%d ", B->buffer[i]);
+    }
+    printf("\n");
+}
+
+FILE* getStream(FILE* fp)
+{
+    FILE* stream = fopen("tokens.txt", "w");
+    twinBuffer B = (twinBuffer)malloc(sizeof(TWIN_BUFFER));
+    B->index = 2*BUFFER_SIZE-1;
+    B->line = 1;
+    populate_buffer(B, fp);
+    B->index = 0;
+    populate_buffer(B, fp);
+    initializeLookupTable();
+    fprintf(stream, "lexeme token\n");
+    // while (B->buffer[B->index]!=EOF)
+    // {
+        int before = B->index;
+        tokenInfo token = getNextToken(B);
+        printbuffer(B);
+        if(token!=NULL)
+        {
+            fprintf(stream, "%s %d\n", token->lexeme, token->type);
+        }
+        if(B->buffer[B->index]=='\n'||token->type==TK_COMMENT)
+        {
+            B->line++;
+        }
+        int after = B->index;
+        if((before<BUFFER_SIZE && after>=BUFFER_SIZE)||(before>=BUFFER_SIZE && after<BUFFER_SIZE))
+        {
+            populate_buffer(B, fp);
+        }
+    // } 
+    fclose(stream);
+    return stream;
 }
 
 void removeComments(char *testcaseFile, char *cleanFile)
@@ -488,6 +674,14 @@ void removeComments(char *testcaseFile, char *cleanFile)
 
 int main()
 {
-    removeComments("Lexer_Test/t1.txt", "clean1.txt");
+    FILE* fp = fopen("Lexer_Test/t3.txt", "r");
+    if(fp==NULL)
+    {
+        printf("Error: Unable to open testcase file\n");
+        return 1;
+    }
+    FILE* stream = getStream(fp);
+    fclose(fp);
+    fclose(stream);
     return 0;
 }

@@ -143,6 +143,8 @@ typedef enum TOKEN_TYPE {
   TK_GE,
   TK_NE,
   NULL_TOKEN,
+  EXIT_TOKEN,
+  BLANK,
   EPSILLON, // Used in FirstFollow computation
   DOLLAR,   // Used in FirstFollow computation
 } TOKEN_TYPE;
@@ -150,16 +152,12 @@ typedef enum TOKEN_TYPE {
 typedef struct TOKEN {
   TOKEN_TYPE type;
   char *lexeme;
+  int lexemeSize;
   int line;
 } TOKEN;
 
-typedef struct TOKEN_INFO {
-  TOKEN **tokens;
-  int count;
-} TOKEN_INFO;
 
-typedef TOKEN *token;
-typedef TOKEN_INFO *tokenInfo;
+typedef TOKEN *tokenInfo;
 
 typedef struct STATE_INFO {
   STATE nextSTATE;
@@ -169,9 +167,8 @@ typedef struct STATE_INFO {
 } STATE_INFO;
 
 typedef struct TWIN_BUFFER {
-  char buffer[2][BUFFER_SIZE];
-  int bufferIndex[2];
-  bool primaryBuffer;
+  char buffer[2*BUFFER_SIZE];
+  int index;
   int line;
 } TWIN_BUFFER;
 
