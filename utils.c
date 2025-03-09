@@ -2,23 +2,12 @@
 #include "parserDef.h"
 #include <stdlib.h>
 
-bool hasEpsillon(FirstFollow *ff, NON_TERMINAL nt) {
-  for (int i = 0; i < ff->first_count[nt]; i++) {
-    if (ff->first[nt][i] == EPSILLON) {
-      return true;
-    }
-  }
-  return false;
-}
 void firstUnion(FirstFollow *ff, NON_TERMINAL nt1, NON_TERMINAL nt2) {
 
   int nt1_next = ff->first_count[nt1];
 
   for (int i = 0; i < ff->first_count[nt2]; i++) {
     TOKEN_TYPE tok = ff->first[nt2][i];
-    if (tok == EPSILLON) {
-      continue;
-    }
     int j;
     for (j = 0; j < nt1_next; j++) {
       if (ff->first[nt1][j] == ff->first[nt2][i]) {
@@ -62,17 +51,17 @@ void computeFirstRec(FirstFollow *ff, NON_TERMINAL nt, grammar G,
       // terminal with first set of nt
       firstUnion(ff, nt, curr);
 
-      // if curr non terminal does not have epsillon in rule then stop loop
-      if (!hasEpsillon(ff, curr)) {
+      // if curr non terminal does not have epsillon in first then stop loop
+      if (!ff->first_has_epsillon[curr]) {
         break;
       }
       j++;
     }
   }
 
-  // if P -> ε is a production then add ε to First(P)
-  if (G.has_epsillon[nt] && !hasEpsillon(ff, nt)) {
-    ff->first[nt][(ff->first_count[nt])++] = EPSILLON;
+  // if P -> ε is a production then mark first_has_epsillon as true for P
+  if (G.has_epsillon[nt] && !ff->first_has_epsillon[nt]) {
+    ff->first_has_epsillon[nt] = true;
   }
 
   // mark non terminal as computed
@@ -119,11 +108,9 @@ void followHelper(FirstFollow *ff, grammar_rule rule, NON_TERMINAL LHS,
 
       NON_TERMINAL curr = rule.elements[j].var.nt;
       for (int k = 0; k < ff->first_count[curr]; k++) {
-        if (ff->first[curr][k] == EPSILLON)
-          continue;
         followAdd(ff, nt, ff->first[curr][k]);
       }
-      if (!hasEpsillon(ff, curr)) {
+      if (!ff->first_has_epsillon[curr]) {
         break;
       }
     }
@@ -171,6 +158,7 @@ FirstFollow computeFirstFollowSet(grammar G) {
   for (int i = 0; i < NON_TERMINAL_COUNT; i++) {
     ff.first_count[i] = 0;
     ff.follow_count[i] = 0;
+    ff.first_has_epsillon[i] = false;
     firstComputed[i] = false;
     depCount[i] = 0;
     followDep[i] = (NON_TERMINAL *)calloc(MAX_RULE_SIZE, sizeof(NON_TERMINAL));
@@ -796,4 +784,9 @@ grammar initializeGrammar() {
   G.rule_count[NT_A] = 2;
   G.has_epsillon[NT_A] = false;
   return G;
+}
+int main() {
+  grammar G = initializeGrammar();
+  FirstFollow ff = computeFirstFollowSet(G);
+  return 0;
 }
