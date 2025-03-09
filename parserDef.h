@@ -88,4 +88,8 @@ typedef struct {
   TOKEN_TYPE follow[NON_TERMINAL_COUNT][MAX_RULE_SIZE];
   int follow_count[NON_TERMINAL_COUNT];
 } FirstFollow;
+
+typedef struct {
+  int table[NON_TERMINAL_COUNT][TOTAL_TOKENS];
+} table;
 #endif

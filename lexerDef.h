@@ -5,7 +5,7 @@
 
 #define BUFFER_SIZE 100
 #define TOTAL_STATES 64
-#define TOTAL_TOKENS 87
+#define TOTAL_TOKENS 62
 
 static const char alphabet[] = {
     'a', 'b', 'c', 'd',  'e',  'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
