@@ -61,7 +61,7 @@ void computeFirstRec(FirstFollow *ff, NON_TERMINAL nt, grammar G,
     }
 
     for (int i = old_count; i < ff->first_count[nt]; i++) {
-        ff->rule_no[nt][i] = rule_no;
+      ff->rule_no[nt][i] = rule_no;
     }
   }
 
@@ -222,6 +222,9 @@ grammar initializeGrammar() {
       .elements = {(grammar_element){false, {.nt = NT_FUNCTION}},
                    (grammar_element){false, {.nt = NT_OTHERFUNCTIONS}}},
       .element_count = 2};
+  G.rules[NT_OTHERFUNCTIONS][1] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = EPSILLON}}},
+                     .element_count = 1};
   G.rule_count[NT_OTHERFUNCTIONS] = 1;
   G.has_epsillon[NT_OTHERFUNCTIONS] = true; // this handles ε
 
@@ -260,6 +263,9 @@ grammar initializeGrammar() {
                    (grammar_element){false, {.nt = NT_PARAMETER_LIST}},
                    (grammar_element){true, {.t = TK_SQR}}},
       .element_count = 6};
+  G.rules[NT_OUTPUT_PAR][1] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = EPSILLON}}},
+                     .element_count = 1};
   G.rule_count[NT_OUTPUT_PAR] = 1;
   G.has_epsillon[NT_OUTPUT_PAR] = true;
 
@@ -311,6 +317,9 @@ grammar initializeGrammar() {
       .elements = {(grammar_element){true, {.t = TK_COMMA}},
                    (grammar_element){false, {.nt = NT_PARAMETER_LIST}}},
       .element_count = 2};
+  G.rules[NT_REMAINING_LIST][1] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = EPSILLON}}},
+                     .element_count = 1};
   G.rule_count[NT_REMAINING_LIST] = 1;
   G.has_epsillon[NT_REMAINING_LIST] = true;
 
@@ -329,6 +338,9 @@ grammar initializeGrammar() {
       .elements = {(grammar_element){false, {.nt = NT_ACTUALORREDEFINED}},
                    (grammar_element){false, {.nt = NT_TYPEDEFINITIONS}}},
       .element_count = 2};
+  G.rules[NT_TYPEDEFINITIONS][1] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = EPSILLON}}},
+                     .element_count = 1};
   G.rule_count[NT_TYPEDEFINITIONS] = 1;
   G.has_epsillon[NT_TYPEDEFINITIONS] = true;
 
@@ -394,6 +406,9 @@ grammar initializeGrammar() {
       .elements = {(grammar_element){false, {.nt = NT_FIELDDEFINITION}},
                    (grammar_element){false, {.nt = NT_MOREFIELDS}}},
       .element_count = 2};
+  G.rules[NT_MOREFIELDS][1] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = EPSILLON}}},
+                     .element_count = 1};
   G.rule_count[NT_MOREFIELDS] = 1;
   G.has_epsillon[NT_MOREFIELDS] = true;
 
@@ -402,6 +417,9 @@ grammar initializeGrammar() {
       .elements = {(grammar_element){false, {.nt = NT_DECLATRATION}},
                    (grammar_element){false, {.nt = NT_DECLATRATIONS}}},
       .element_count = 2};
+  G.rules[NT_DECLATRATIONS][1] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = EPSILLON}}},
+                     .element_count = 1};
   G.rule_count[NT_DECLATRATIONS] = 1;
   G.has_epsillon[NT_DECLATRATIONS] = true;
 
@@ -423,6 +441,9 @@ grammar initializeGrammar() {
       (grammar_rule){.elements = {(grammar_element){true, {.t = TK_COLON}},
                                   (grammar_element){true, {.t = TK_GLOBAL}}},
                      .element_count = 2};
+  G.rules[NT_GLOBAL_OR_NOT][1] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = EPSILLON}}},
+                     .element_count = 1};
   G.rule_count[NT_GLOBAL_OR_NOT] = 1;
   G.has_epsillon[NT_GLOBAL_OR_NOT] = true;
 
@@ -431,6 +452,9 @@ grammar initializeGrammar() {
       .elements = {(grammar_element){false, {.nt = NT_STMT}},
                    (grammar_element){false, {.nt = NT_OTHERSTMTS}}},
       .element_count = 2};
+  G.rules[NT_OTHERSTMTS][1] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = EPSILLON}}},
+                     .element_count = 1};
   G.rule_count[NT_OTHERSTMTS] = 1;
   G.has_epsillon[NT_OTHERSTMTS] = true;
 
@@ -482,6 +506,9 @@ grammar initializeGrammar() {
               (grammar_element){false, {.nt = NT_MOREEXPANSIONS}},
           },
       .element_count = 2};
+  G.rules[NT_OPTION_SINGLE_CONSTRUCTED][1] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = EPSILLON}}},
+                     .element_count = 1};
   G.rule_count[NT_OPTION_SINGLE_CONSTRUCTED] = 1;
   G.has_epsillon[NT_OPTION_SINGLE_CONSTRUCTED] = true;
 
@@ -498,6 +525,9 @@ grammar initializeGrammar() {
       .elements = {(grammar_element){false, {.nt = NT_ONEEXPANSION}},
                    (grammar_element){false, {.nt = NT_MOREEXPANSIONS}}},
       .element_count = 2};
+  G.rules[NT_MOREEXPANSIONS][1] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = EPSILLON}}},
+                     .element_count = 1};
   G.rule_count[NT_MOREEXPANSIONS] = 1;
   G.has_epsillon[NT_MOREEXPANSIONS] = true;
 
@@ -522,6 +552,9 @@ grammar initializeGrammar() {
                                   (grammar_element){true, {.t = TK_SQR}},
                                   (grammar_element){true, {.t = TK_ASSIGNOP}}},
                      .element_count = 4};
+  G.rules[NT_OUTPUTPARAMETERS][1] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = EPSILLON}}},
+                     .element_count = 1};
   G.rule_count[NT_OUTPUTPARAMETERS] = 1;
   G.has_epsillon[NT_OUTPUTPARAMETERS] = true;
 
@@ -612,6 +645,9 @@ grammar initializeGrammar() {
                    (grammar_element){false, {.nt = NT_TERM}},
                    (grammar_element){false, {.nt = NT_EXPPRIME}}},
       .element_count = 3};
+  G.rules[NT_EXPPRIME][1] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = EPSILLON}}},
+                     .element_count = 1};
   G.rule_count[NT_EXPPRIME] = 1;
   G.has_epsillon[NT_EXPPRIME] = true;
 
@@ -629,6 +665,9 @@ grammar initializeGrammar() {
                    (grammar_element){false, {.nt = NT_FACTOR}},
                    (grammar_element){false, {.nt = NT_TERMPRIME}}},
       .element_count = 3};
+  G.rules[NT_TERMPRIME][1] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = EPSILLON}}},
+                     .element_count = 1};
   G.rule_count[NT_TERMPRIME] = 1;
   G.has_epsillon[NT_TERMPRIME] = true;
 
@@ -752,6 +791,9 @@ grammar initializeGrammar() {
                                   (grammar_element){false, {.nt = NT_IDLIST}},
                                   (grammar_element){true, {.t = TK_SQR}}},
                      .element_count = 3};
+  G.rules[NT_OPTIONALRETURN][1] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = EPSILLON}}},
+                     .element_count = 1};
   G.rule_count[NT_OPTIONALRETURN] = 1;
   G.has_epsillon[NT_OPTIONALRETURN] = true;
 
@@ -768,6 +810,9 @@ grammar initializeGrammar() {
       (grammar_rule){.elements = {(grammar_element){true, {.t = TK_COMMA}},
                                   (grammar_element){false, {.nt = NT_IDLIST}}},
                      .element_count = 2};
+  G.rules[NT_MORE_IDS][1] =
+      (grammar_rule){.elements = {(grammar_element){true, {.t = EPSILLON}}},
+                     .element_count = 1};
   G.rule_count[NT_MORE_IDS] = 1;
   G.has_epsillon[NT_MORE_IDS] = true;
 
