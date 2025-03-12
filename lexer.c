@@ -413,7 +413,6 @@ STATE_INFO getNextState(STATE currentState, char nextSymbol)
         }
         default:
         {
-            printf("Here\n");
             return (STATE_INFO){INVALID, false, NULL_TOKEN, 0};
         }
     }
