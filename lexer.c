@@ -668,13 +668,19 @@ tokenInfo getNextToken(twinBuffer B, FILE* fp)
         printf("Error: Invalid token ");
         printf("Line no. %d ", B->line);
         printf("Lexeme: ");
-        for (int i = start; i <=end; i++)
+        if(start==end)
         {
-            printf("%c", B->buffer[i]);
+            printf("%c\n", B->buffer[start]);
+            B->index = (end+1)%(2*BUFFER_SIZE);
+            return NULL;
+        }
+        while (start!=end)
+        {
+            printf("%c", B->buffer[start]);
+            start++;
+            start = start%(2*BUFFER_SIZE);
         }
         printf("\n");
-        end++;
-        end = end%(2*BUFFER_SIZE);
         B->index = end;
         return NULL;
     }
