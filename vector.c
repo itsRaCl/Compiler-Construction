@@ -1,36 +1,54 @@
 #include "vector.h"
 #include <stdlib.h>
+#include <stdio.h>
 
-vector *createVector()
+Vector createVector()
 {
-    vector *v = (vector *)malloc(sizeof(vector));
+    Vector v = (Vector)malloc(sizeof(vector));
     v->size = 0;
     v->capacity = 1;
-    v->data = (TOKEN **)malloc(sizeof(TOKEN *) * v->capacity);
+    v->tokens = (tokenInfo*)malloc(sizeof(tokenInfo)*v->capacity);
     return v;
 }
 
-void pushBack(vector *v, TOKEN *t)
+void push(Vector v, tokenInfo token)
 {
-    if (v->size == v->capacity)
+    if(v->size==v->capacity)
     {
-        v->capacity *= 2;
-        v->data = (TOKEN **)realloc(v->data, sizeof(TOKEN *) * v->capacity);
+        v->capacity = 2*v->capacity;
+        v->tokens = (tokenInfo*)realloc(v->tokens, sizeof(tokenInfo)*v->capacity);
     }
-    v->data[v->size++] = t;
+    v->tokens[v->size] = token;
+    v->size++;
 }
 
-TOKEN *get(vector *v, int index)
+tokenInfo pop(Vector v)
 {
-    if (index < 0 || index >= v->size)
+    if(v->size==0)
     {
         return NULL;
     }
-    return v->data[index];
+    v->size--;
+    return v->tokens[v->size];
 }
 
-void freeVector(vector *v)
+tokenInfo get(Vector v, int index)
 {
-    free(v->data);
+    if(index>=v->size)
+    {
+        return NULL;
+    }
+    return v->tokens[index];
+}
+
+void freeVector(Vector v)
+{
+    for (int i = 0; i < v->size; i++)
+    {
+        free(v->tokens[i]->lexeme);
+        free(v->tokens[i]);
+    }
+    free(v->tokens);
     free(v);
 }
+

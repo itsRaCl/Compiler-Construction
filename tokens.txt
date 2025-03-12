@@ -1,10 +1,6 @@
-lexeme token
-Line no. 1 Lexeme % Test case 1: For testing your lexer
- Token TK_COMMENT
-Line no. 2 Lexeme %Do not run your parser on this test case
- Token TK_COMMENT
-Line no. 4 Lexeme %The following program computes the function value for the user defined input
- Token TK_COMMENT
+Line no. 1 Lexeme % Token TK_COMMENT
+Line no. 2 Lexeme % Token TK_COMMENT
+Line no. 4 Lexeme % Token TK_COMMENT
 Line no. 5 Lexeme _main Token TK_FUNID
 Line no. 5 Lexeme input Token TK_INPUT
 Line no. 5 Lexeme _input Token TK_FUNID

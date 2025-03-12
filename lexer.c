@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include "string.h"
+#include "vector.h"
 
 static trie keywordsLookupTable;
 
@@ -658,6 +659,19 @@ tokenInfo getNextToken(twinBuffer B)
     }
     else
     {
+        if(nextState.tokenType==TK_COMMENT)
+        {
+            char* lexeme = (char*)malloc(sizeof(char)*2);
+            lexeme[0] = '%';
+            lexeme[1] = '\0';
+            tokenInfo token = (tokenInfo)malloc(sizeof(TOKEN));
+            token->lexeme = lexeme;
+            token->lexemeSize = 1;
+            token->line = B->line;
+            token->type = TK_COMMENT;
+            B->index = (end+1)%(2*BUFFER_SIZE);
+            return token;
+        }
         int redaction = nextState.redaction;
         end = (end-redaction+2*BUFFER_SIZE)%(2*BUFFER_SIZE);
         int size = 0;
@@ -719,9 +733,9 @@ void printbuffer(twinBuffer B)
     printf("\n");
 }
 
-FILE* getStream(FILE* fp)
+Vector getAllTokens(FILE* fp)
 {
-    FILE* stream = fopen("tokens.txt", "w");
+    Vector tokens = createVector();
     twinBuffer B = (twinBuffer)malloc(sizeof(TWIN_BUFFER));
     for (int i = 0; i < 2*BUFFER_SIZE; i++)
     {
@@ -733,7 +747,6 @@ FILE* getStream(FILE* fp)
     B->index = 0;
     populate_buffer(B, fp);
     initializeLookupTable();
-    fprintf(stream, "lexeme token\n");
     while (B->buffer[B->index]!='\0')
     {
         int before = B->index;
@@ -746,8 +759,7 @@ FILE* getStream(FILE* fp)
             }
             if(token->type!=NULL_TOKEN&&token->type!=NEWLINE&&token->type!=EXIT_TOKEN&&token->type!=BLANK)
             {
-                fprintf(stream, "Line no. %d Lexeme %s Token %s\n", token->line, token->lexeme, getTokenName(token->type));
-                printf("Line no. %d Lexeme %s Token %s\n", token->line, token->lexeme, getTokenName(token->type));
+                push(tokens, token);
             }
         }
         int after = B->index;
@@ -756,6 +768,28 @@ FILE* getStream(FILE* fp)
             populate_buffer(B, fp);
         }
     } 
+    free(B);
+    return tokens;
+}
+
+void printVector(Vector v)
+{
+    for (int i = 0; i < v->size; i++)
+    {
+        printf("Line no. %d Lexeme %s Token %s\n", v->tokens[i]->line, v->tokens[i]->lexeme, getTokenName(v->tokens[i]->type));
+    }
+}
+
+FILE* getStream(FILE* fp)
+{
+    FILE* stream = fopen("tokens.txt", "w");
+    Vector tokens = getAllTokens(fp);
+    for (int i = 0; i < tokens->size; i++)
+    {
+        tokenInfo token = get(tokens, i);
+        fprintf(stream, "Line no. %d Lexeme %s Token %s\n", token->line, token->lexeme, getTokenName(token->type));
+    }
+    freeVector(tokens);
     fclose(stream);
     return stream;
 }

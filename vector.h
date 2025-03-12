@@ -6,12 +6,14 @@
 typedef struct vector {
     int size;
     int capacity;
-    TOKEN **data;
+    tokenInfo* tokens;
 } vector;
 
-typedef vector * Vector;
-vector *createVector();
-void pushBack(vector *v, TOKEN *t);
-TOKEN *get(vector *v, int index);
-void freeVector(vector *v);
+typedef vector* Vector;
+
+Vector createVector();
+void push(Vector v, tokenInfo token);
+tokenInfo pop(Vector v);
+tokenInfo get(Vector v, int index);
+void freeVector(Vector v);
 #endif

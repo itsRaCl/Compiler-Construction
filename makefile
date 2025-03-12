@@ -7,8 +7,11 @@ trie.o: trie.c trie.h
 string.o: string.c string.h
 	gcc -c string.c
 
-run_lexer: lexer.o trie.o string.o
-	gcc -o run_lexer lexer.o trie.o string.o
+vector.o: vector.c vector.h
+	gcc -c vector.c
+
+run_lexer: lexer.o trie.o string.o vector.o
+	gcc -o run_lexer lexer.o trie.o string.o vector.o
 
 run: run_lexer
 	./run_lexer
