@@ -143,6 +143,7 @@ typedef enum TOKEN_TYPE {
   TK_GE,
   TK_NE,
   NULL_TOKEN,
+  NEWLINE,
   EXIT_TOKEN,
   BLANK,
   EPSILLON, // Used in FirstFollow computation

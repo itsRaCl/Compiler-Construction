@@ -116,9 +116,13 @@ STATE_INFO getNextState(STATE currentState, char nextSymbol)
             {
                 return (STATE_INFO){S55, false, NULL_TOKEN, 0};
             }
-            else if(nextSymbol=='\n'||nextSymbol=='\t'||nextSymbol==' ')
+            else if(nextSymbol=='\t'||nextSymbol==' ')
             {
-                return (STATE_INFO){START, true, NULL_TOKEN, 0};
+                return (STATE_INFO){START, false, NULL_TOKEN, 0};
+            }
+            else if(nextSymbol=='\n')
+            {
+                return (STATE_INFO){START, true, NEWLINE, 0};
             }
             else if(nextSymbol=='\0')
             {
@@ -646,9 +650,12 @@ tokenInfo getNextToken(twinBuffer B)
     }
     else
     {
-        if(nextState.nextSTATE==NULL_TOKEN)
+        if(nextState.nextSTATE==NEWLINE)
         {
+            end++;
+            end = end%(2*BUFFER_SIZE);
             B->index = end;
+            B->line++;
             return NULL;
         }
         int redaction = nextState.redaction;
@@ -733,11 +740,11 @@ FILE* getStream(FILE* fp)
         tokenInfo token = getNextToken(B);
         if(token!=NULL)
         {
-            if(B->buffer[B->index]=='\n'||token->type==TK_COMMENT)
+            if(token->type==NEWLINE||token->type==TK_COMMENT)
             {
                 B->line++;
             }
-            if(token->type!=NULL_TOKEN)
+            if(token->type!=NULL_TOKEN&&token->type!=NEWLINE&&token->type!=EXIT_TOKEN&&token->type!=BLANK)
             {
                 fprintf(stream, "Line no. %d Lexeme %s Token %s\n", token->line, token->lexeme, getTokenName(token->type));
             }
