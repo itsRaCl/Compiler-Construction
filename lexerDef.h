@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-#define BUFFER_SIZE 100
+#define BUFFER_SIZE 50
 #define TOTAL_STATES 64
 #define TOTAL_TOKENS 62
 

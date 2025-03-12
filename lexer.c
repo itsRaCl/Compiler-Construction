@@ -613,11 +613,47 @@ void populate_buffer(twinBuffer B, FILE* fp)
     }
 }
 
+void handle_comments(twinBuffer B, FILE* fp)
+{
+    int before = B->index;
+    while (B->buffer[B->index]!='\n'&&B->buffer[B->index]!='\0')
+    {
+        B->index++;
+        B->index = B->index%(2*BUFFER_SIZE);
+        int after = B->index;
+        if((before<BUFFER_SIZE && after>=BUFFER_SIZE)||(before>=BUFFER_SIZE && after<BUFFER_SIZE))
+        {
+            populate_buffer(B, fp);
+        }
+        before = B->index;
+    }
+    B->index++;
+    B->index = B->index%(2*BUFFER_SIZE);
+    int after = B->index;
+    if((before<BUFFER_SIZE && after>=BUFFER_SIZE)||(before>=BUFFER_SIZE && after<BUFFER_SIZE))
+    {
+        populate_buffer(B, fp);
+    }
+    return;
+}
 
 
-tokenInfo getNextToken(twinBuffer B)
+tokenInfo getNextToken(twinBuffer B, FILE* fp)
 {
     STATE currentState = START;
+    if(B->buffer[B->index]=='%')
+    {
+        handle_comments(B, fp);
+        char* lexeme = (char*)malloc(sizeof(char)*2);
+        lexeme[0] = '%';
+        lexeme[1] = '\0';
+        tokenInfo token = (tokenInfo)malloc(sizeof(TOKEN));
+        token->lexeme = lexeme;
+        token->lexemeSize = 1;
+        token->line = B->line;
+        token->type = TK_COMMENT;
+        return token;
+    }
     int start = B->index;
     int end = B->index;
     STATE_INFO nextState = getNextState(currentState, B->buffer[start]);
@@ -659,19 +695,6 @@ tokenInfo getNextToken(twinBuffer B)
     }
     else
     {
-        if(nextState.tokenType==TK_COMMENT)
-        {
-            char* lexeme = (char*)malloc(sizeof(char)*2);
-            lexeme[0] = '%';
-            lexeme[1] = '\0';
-            tokenInfo token = (tokenInfo)malloc(sizeof(TOKEN));
-            token->lexeme = lexeme;
-            token->lexemeSize = 1;
-            token->line = B->line;
-            token->type = TK_COMMENT;
-            B->index = (end+1)%(2*BUFFER_SIZE);
-            return token;
-        }
         int redaction = nextState.redaction;
         end = (end-redaction+2*BUFFER_SIZE)%(2*BUFFER_SIZE);
         int size = 0;
@@ -706,7 +729,7 @@ tokenInfo getNextToken(twinBuffer B)
         }
         else if(nextState.tokenType==TK_FUNID)
         {
-            if(stringcmp(lexeme, "main"))
+            if(stringcmp(lexeme, "_main"))
             {
                 token->type = TK_MAIN;
             }
@@ -728,7 +751,7 @@ void printbuffer(twinBuffer B)
 {
     for (int i = 0; i < 2*BUFFER_SIZE; i++)
     {
-        printf("%d ", B->buffer[i]);
+        printf("%c ", B->buffer[i]);
     }
     printf("\n");
 }
@@ -750,12 +773,16 @@ Vector getAllTokens(FILE* fp)
     while (B->buffer[B->index]!='\0')
     {
         int before = B->index;
-        tokenInfo token = getNextToken(B);
+        tokenInfo token = getNextToken(B,fp);
         if(token!=NULL)
         {
             if(token->type==NEWLINE||token->type==TK_COMMENT)
             {
                 B->line++;
+            }
+            if(token->type==TK_COMMENT)
+            {
+                continue;
             }
             if(token->type!=NULL_TOKEN&&token->type!=NEWLINE&&token->type!=EXIT_TOKEN&&token->type!=BLANK)
             {
@@ -783,13 +810,43 @@ void printVector(Vector v)
 FILE* getStream(FILE* fp)
 {
     FILE* stream = fopen("tokens.txt", "w");
-    Vector tokens = getAllTokens(fp);
-    for (int i = 0; i < tokens->size; i++)
+    twinBuffer B = (twinBuffer)malloc(sizeof(TWIN_BUFFER));
+    for (int i = 0; i < 2*BUFFER_SIZE; i++)
     {
-        tokenInfo token = get(tokens, i);
-        fprintf(stream, "Line no. %d Lexeme %s Token %s\n", token->line, token->lexeme, getTokenName(token->type));
+        B->buffer[i] = '\0';
     }
-    freeVector(tokens);
+    B->index = 2*BUFFER_SIZE-1;
+    B->line = 1;
+    populate_buffer(B, fp);
+    B->index = 0;
+    populate_buffer(B, fp);
+    initializeLookupTable();
+    while (B->buffer[B->index]!='\0')
+    {
+        int before = B->index;
+        tokenInfo token = getNextToken(B,fp);
+        if(token!=NULL)
+        {
+            if(token->type==NEWLINE||token->type==TK_COMMENT)
+            {
+                B->line++;
+            }
+            if(token->type!=NULL_TOKEN&&token->type!=NEWLINE&&token->type!=EXIT_TOKEN&&token->type!=BLANK)
+            {
+                fprintf(stream,"Line no. %d Lexeme %s Token %s\n", token->line, token->lexeme, getTokenName(token->type));
+            }
+            if(token->type==TK_COMMENT)
+            {
+                continue;
+            }
+        }
+        int after = B->index;
+        if((before<BUFFER_SIZE && after>=BUFFER_SIZE)||(before>=BUFFER_SIZE && after<BUFFER_SIZE))
+        {
+            populate_buffer(B, fp);
+        }
+    } 
+    free(B);
     fclose(stream);
     return stream;
 }
@@ -825,6 +882,7 @@ void removeComments(char *testcaseFile, char *cleanFile)
             {
                 ch = fgetc(testcaseFPTR);
             }
+            fputc('\n', cleanflieFPTR);
             
         }
         else
