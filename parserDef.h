@@ -2,6 +2,7 @@
 #define PARSER_DEF
 
 #include "lexerDef.h"
+#include "vector.h"
 
 #define NON_TERMINAL_COUNT 53
 #define MAX_RULE_SIZE 15
@@ -94,4 +95,12 @@ typedef struct {
 typedef struct {
   int table[NON_TERMINAL_COUNT][TOTAL_TOKENS];
 } table;
+
+typedef struct parseTree {
+    TOKEN t;
+    parseTree *parent;
+    int no_of_children;
+    struct parseTree *children[MAX_RULE_SIZE];
+} parseTree;
+
 #endif
