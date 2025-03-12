@@ -96,9 +96,11 @@ typedef struct {
   int table[NON_TERMINAL_COUNT][TOTAL_TOKENS];
 } table;
 
+struct parseTree;
+
 typedef struct parseTree {
     TOKEN t;
-    parseTree *parent;
+    struct parseTree *parent;
     int no_of_children;
     struct parseTree *children[MAX_RULE_SIZE];
 } parseTree;
