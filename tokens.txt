@@ -41,9 +41,7 @@ Line no. 6 Lexeme c4bbb Token TK_ID
 Line no. 6 Lexeme < Token TK_LT
 Line no. 6 Lexeme <= Token TK_LE
 Line no. 6 Lexeme <= Token TK_LE
-Line no. 6 Lexeme - Token TK_MINUS
-Line no. 6 Lexeme - Token TK_MINUS
-Line no. 6 Lexeme - Token TK_MINUS
+Line no. 6 Lexeme <--- Token TK_ASSIGNOP
 Line no. 6 Lexeme ( Token TK_OP
 Line no. 6 Lexeme d4cbcd5677 Token TK_ID
 Line no. 6 Lexeme - Token TK_MINUS
@@ -60,6 +58,7 @@ Line no. 7 Lexeme + Token TK_PLUS
 Line no. 7 Lexeme then Token TK_THEN
 Line no. 7 Lexeme _AbC23 Token TK_FUNID
 Line no. 7 Lexeme #new Token TK_RUID
+Line no. 7 Lexeme . Token TK_DOT
 Line no. 7 Lexeme 34.54E-23 Token TK_RNUM
 Line no. 7 Lexeme ; Token TK_SEM
 Line no. 7 Lexeme else Token TK_ELSE
@@ -84,6 +83,7 @@ Line no. 8 Lexeme ~ Token TK_NOT
 Line no. 8 Lexeme d4cbcccccccccccccbbbbbbbbdddd5222222222222633333333333377 Token TK_ID
 Line no. 8 Lexeme ~ Token TK_NOT
 Line no. 8 Lexeme ; Token TK_SEM
+Line no. 9 Lexeme + Token TK_PLUS
 Line no. 9 Lexeme 2543.23E45 Token TK_RNUM
 Line no. 9 Lexeme - Token TK_MINUS
 Line no. 9 Lexeme 432 Token TK_NUM
