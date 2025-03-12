@@ -98,7 +98,7 @@ typedef struct {
 
 typedef struct parseTree {
     TOKEN t;
-    int parent;
+    parseTree *parent;
     int no_of_children;
     struct parseTree *children[MAX_RULE_SIZE];
 } parseTree;
