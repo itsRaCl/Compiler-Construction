@@ -80,7 +80,7 @@ typedef enum STATE {
   S60,
   S61,
   INVALID,
-  EXIT
+  EXIT,
 
 } STATE;
 
