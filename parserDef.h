@@ -99,10 +99,13 @@ typedef struct {
 struct parseTree;
 
 typedef struct parseTree {
-    TOKEN t;
-    struct parseTree *parent;
-    int no_of_children;
-    struct parseTree *children[MAX_RULE_SIZE];
+  grammar_element t;
+  int line;
+  char *lexeme;
+  int lexemeSize;
+  struct parseTree *parent;
+  int no_of_children;
+  struct parseTree *children[MAX_RULE_SIZE];
 } parseTree;
 
 #endif
