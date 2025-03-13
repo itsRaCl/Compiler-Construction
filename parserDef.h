@@ -96,16 +96,20 @@ typedef struct {
   int table[NON_TERMINAL_COUNT][TOTAL_TOKENS];
 } table;
 
-struct parseTree;
-
-typedef struct parseTree {
-  grammar_element t;
+typedef struct {
+  grammar_element symbol;
   int line;
   char *lexeme;
   int lexemeSize;
+} parseTreeElement;
+
+typedef struct parseTree parseTree;
+
+struct parseTree {
+  parseTreeElement ele;
   struct parseTree *parent;
   int no_of_children;
   struct parseTree *children[MAX_RULE_SIZE];
-} parseTree;
+};
 
 #endif
