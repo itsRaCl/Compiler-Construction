@@ -728,6 +728,31 @@ void handle_invalid_error(STATE_INFO state, twinBuffer B, int start, int end)
 
 }
 
+bool handle_valid_error(tokenInfo token)
+{
+    if(token->type==TK_ID)
+    {
+      if(token->lexemeSize>20)
+      {
+          printf("Line no. %d ", token->line);
+          printf("Error: Variable Identifier %s is longer than the prescribed length of 20 characters\n", token->lexeme);
+          return false;
+      }
+      return true;
+    }
+    else if(token->type==TK_FUNID)
+    {
+      if(token->lexemeSize>30)
+      {
+          printf("Line no. %d ", token->line);
+          printf("Error: Function Identifier %s is longer than the prescribed length of 30 characters\n", token->lexeme);
+          return false;
+      }
+      return true;
+    }
+    return true;
+}
+
 tokenInfo getNextToken(twinBuffer B, FILE* fp)
 {
     STATE currentState = START;
@@ -866,6 +891,7 @@ Vector getAllTokens(FILE* fp)
             }
             if(token->type!=NULL_TOKEN&&token->type!=NEWLINE&&token->type!=EXIT_TOKEN&&token->type!=BLANK)
             {
+                if(handle_valid_error(token))
                 push(tokens, token);
             }
         }
@@ -912,6 +938,7 @@ void getStream(FILE* fp)
             }
             if(token->type!=NULL_TOKEN&&token->type!=NEWLINE&&token->type!=EXIT_TOKEN&&token->type!=BLANK)
             {
+                if(handle_valid_error(token))
                 printf("Line no. %d Lexeme %s Token %s\n", token->line, token->lexeme, getTokenName(token->type));
             }
             if(token->type==TK_COMMENT)
@@ -974,13 +1001,14 @@ void removeComments(char *testcaseFile, char *cleanFile)
 
 int main()
 {
-    FILE* fp = fopen("Lexer_Test/t1.txt", "r");
+    FILE* fp = fopen("Lexer_Test/t6.txt", "r");
     if(fp==NULL)
     {
         printf("Error: Unable to open testcase file\n");
         return 1;
     }
-    getStream(fp);
+    // getStream(fp);
+    getAllTokens(fp);
     fclose(fp);
     return 0;
 }
