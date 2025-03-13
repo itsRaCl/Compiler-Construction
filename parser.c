@@ -25,205 +25,117 @@ void createParseTable(FirstFollow F, table *T) {
 
 parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G,
                                 vector *input) {
-  int n = input->size;
-  int stack[200];
-  bool stack_terminal[200];
+  grammar_element *symbolStack[200];
+  parseTree *treeNodeStack[200];
 
-  parseTree *ptree[200];
-  int top = -1;
-  int treetop = -1;
+  int symbolStackTop = 0;
+  int treeNodeStackTop = 0;
+  int lookAheadPointer = 0;
 
-  stack[++top] = DOLLAR;
-  stack_terminal[top] = true;
-  stack[++top] = NT_PROGRAM;
-  stack_terminal[top] = false;
+  parseTree *root = malloc(sizeof(parseTree));
+  root->ele.symbol.terminal = false;
+  root->ele.symbol.var.nt = NT_PROGRAM;
+  root->parent = NULL;
 
-  ptree[++treetop] = (parseTree *)malloc(sizeof(parseTree));
-  if (ptree[treetop] == NULL) {
-    printf("Error: Memory allocation failed\n");
-    exit(1);
-  }
-  ptree[treetop]->t.var.nt = NT_PROGRAM;
-  ptree[treetop]->t.terminal = false;
-  ptree[treetop]->lexeme = NULL;
-  ptree[treetop]->line = 0;
-  ptree[treetop]->lexemeSize = 0;
-  ptree[treetop]->parent = NULL;
-  ptree[treetop]->no_of_children = 0;
+  treeNodeStack[treeNodeStackTop] = root;
 
-  parseTree *root = ptree[treetop];
-  int i = 0;
-  int erroc = 1, err = 0;
+  grammar_element *dollar = (grammar_element *)malloc(sizeof(grammar_element));
+  dollar->terminal = true;
+  dollar->var.t = DOLLAR;
+  grammar_element *program = (grammar_element *)malloc(sizeof(grammar_element));
+  program->terminal = false;
+  program->var.nt = NT_PROGRAM;
 
-  // print input
-  for (int i = 0; i < n; i++) {
-    printf("%d ", get(input, i)->type);
-  }
-  printf("\n");
+  // Inserting dollar as bottom symbol of stack
+  symbolStack[symbolStackTop] = dollar;
 
-  printf("Parsing Started\n");
+  // Inserting start symbol to stack <program>
+  symbolStackTop++;
+  symbolStack[symbolStackTop] = program;
 
-  int x = 5;
-  while (i < n && top >= 0) {
-    printf("parsing input %d\n", i);
+  // Following Naming in Slides
+  while (lookAheadPointer < input->size && symbolStackTop >= 0) {
+    grammar_element *X = symbolStack[symbolStackTop];
+    TOKEN *a = get(input, lookAheadPointer);
 
-    if (stack[top] == get(input, i)->type && stack_terminal[top] == true) {
-      printf("Matched token %d at input %d\n", get(input, i)->type, i);
-      if (stack[top] == DOLLAR) {
-        printf("Parsing Successful\n");
-        return root;
+    if (X->terminal) {
+      if (X->var.t == DOLLAR && a->type == DOLLAR) {
+        break;
+      } else if (X->var.t == a->type) {
+        parseTree *node = treeNodeStack[treeNodeStackTop];
+        node->ele.symbol.terminal = true;
+        node->ele.symbol.var.t = a->type;
+        node->ele.line = a->line;
+        node->ele.lexeme = a->lexeme;
+        node->ele.lexemeSize = a->lexemeSize;
+
+        free(X);
+        symbolStack[symbolStackTop] = NULL;
+        symbolStackTop--;
+        treeNodeStackTop--;
+        lookAheadPointer++;
+      }
+    } else {
+      NON_TERMINAL nt = X->var.nt;
+      int rule_no = T.table[nt][a->type];
+      if (rule_no == -1) {
+        printf("ERROR RECOVERY REACHED (1)");
+        break;
       } else {
-        ptree[treetop]->lexeme = get(input, i)->lexeme;
-        ptree[treetop]->line = get(input, i)->line;
-        ptree[treetop]->lexemeSize = get(input, i)->lexemeSize;
-        ptree[treetop]->t.var.t = get(input, i)->type;
-        ptree[treetop]->t.terminal = true;
-        top--;
-        treetop--;
-        i++;
-        continue;
+        grammar_rule rule = G.rules[nt][rule_no];
+        parseTree *node = treeNodeStack[treeNodeStackTop];
+        treeNodeStackTop--;
+        free(X);
+        symbolStack[symbolStackTop] = NULL;
+        symbolStackTop--;
+
+        if (G.has_epsillon[nt] && rule_no == G.rule_count[nt]) {
+          node->no_of_children = 1;
+          parseTree *childNode = (parseTree *)malloc(sizeof(parseTree));
+          childNode->ele.symbol.terminal = true;
+          childNode->ele.symbol.var.t = EPSILLON;
+          childNode->parent = node;
+          childNode->no_of_children = 0;
+          node->children[0] = childNode;
+        } else {
+
+          node->no_of_children = rule.element_count;
+
+          for (int i = rule.element_count - 1; i >= 0; i--) {
+            parseTree *childNode = (parseTree *)malloc(sizeof(parseTree));
+
+            childNode->ele.symbol.terminal = rule.elements[i].terminal;
+
+            if (rule.elements[i].terminal) {
+              childNode->ele.symbol.var.t = rule.elements[i].var.t;
+            } else {
+              childNode->ele.symbol.var.nt = rule.elements[i].var.nt;
+            }
+
+            childNode->parent = node;
+            childNode->no_of_children = 0;
+            node->children[i] = childNode;
+
+            treeNodeStack[++treeNodeStackTop] = childNode;
+            grammar_element *ele =
+                (grammar_element *)malloc(sizeof(grammar_element));
+            ele->terminal = rule.elements[i].terminal;
+            if (ele->terminal) {
+              ele->var.t = rule.elements[i].var.t;
+            } else {
+              ele->var.nt = rule.elements[i].var.nt;
+            }
+
+            symbolStack[++symbolStackTop] = ele;
+          }
+        }
       }
     }
-    printf("Top of stack %d. Terminal : %d\n", stack[top], stack_terminal[top]);
-    printf("Current token %d\n", get(input, i)->type);
-    grammar_rule rule =
-        G.rules[stack[top]][T.table[stack[top]][get(input, i)->type]];
-    if (rule.element_count == 0) {
-      printf("Error: Unexpected token %d at line %d\n", get(input, i)->type,
-             get(input, i)->line);
-      return NULL;
-    }
-    // print stack
-    printf("Stack: ");
-    for (int j = 0; j <= top; j++) {
-      printf("%d ", stack[j]);
-    }
-    printf("\n       ");
-    for (int j = 0; j <= top; j++) {
-      printf("%d ", stack_terminal[j]);
-    }
-    printf("\n");
-    top--;
-    printf("Popped top of stack\n");
-    parseTree *temp = ptree[treetop];
-    treetop--;
-    for (int j = rule.element_count - 1; j >= 0; j--) {
-
-      // check if epsilon
-      if (rule.elements[j].terminal == true &&
-          rule.elements[j].var.t == EPSILLON) {
-        continue;
-      }
-
-      // incrementing top
-      top++;
-      treetop += 1;
-
-      // pushing element on stack
-      if (rule.elements[j].terminal) {
-        stack_terminal[top] = true;
-        stack[top] = rule.elements[j].var.t;
-      } else {
-        stack_terminal[top] = false;
-        stack[top] = rule.elements[j].var.nt;
-      }
-
-      // creating parse tree node
-      ptree[treetop] = (parseTree *)malloc(sizeof(parseTree));
-      if (ptree[treetop] == NULL) {
-        printf("Error: Memory allocation failed\n");
-        exit(1);
-      }
-      if (stack_terminal[top]) {
-        ptree[treetop]->t.var.t = stack[top];
-        ptree[treetop]->t.terminal = true;
-      } else {
-        ptree[treetop]->t.var.nt = stack[top];
-        ptree[treetop]->t.terminal = false;
-      }
-      ptree[treetop]->lexeme = NULL;
-      ptree[treetop]->line = -1;
-      ptree[treetop]->lexemeSize = 0;
-      ptree[treetop]->parent = temp;
-      ptree[treetop]->no_of_children = 0;
-
-      // adding child to parent
-      temp->children[temp->no_of_children] = ptree[treetop];
-      temp->no_of_children++;
-
-      // print stack
-      printf("Pushed %d to stack\n", stack[top]);
-      printf("Stack: ");
-      for (int j = 0; j <= top; j++) {
-        printf("%d ", stack[j]);
-      }
-      printf("\n       ");
-      for (int j = 0; j <= top; j++) {
-        printf("%d ", stack_terminal[j]);
-      }
-      printf("\n");
-    }
-    x--;
   }
+
+  return root;
 }
-char* getNonTerminal(NON_TERMINAL nt){
-  switch (nt) {
-    case NT_PROGRAM: return "NT_PROGRAM";
-    case NT_MAINFUNCTION: return "NT_MAINFUNCTION";
-    case NT_OTHERFUNCTIONS: return "NT_OTHERFUNCTIONS";
-    case NT_FUNCTION: return "NT_FUNCTION";
-    case NT_INPUT_PAR: return "NT_INPUT_PAR";
-    case NT_OUTPUT_PAR: return "NT_OUTPUT_PAR";
-    case NT_PARAMETER_LIST: return "NT_PARAMETER_LIST";
-    case NT_DATATYPE: return "NT_DATATYPE";
-    case NT_PRIMITIVEDATATYPE: return "NT_PRIMITIVEDATATYPE";
-    case NT_CONSTRUCTEDDATATYPE: return "NT_CONSTRUCTEDDATATYPE";
-    case NT_REMAINING_LIST: return "NT_REMAINING_LIST";
-    case NT_STMTS: return "NT_STMTS";
-    case NT_TYPEDEFINITIONS: return "NT_TYPEDEFINITIONS";
-    case NT_ACTUALORREDEFINED: return "NT_ACTUALORREDEFINED";
-    case NT_TYPEDEFINITION: return "NT_TYPEDEFINITION";
-    case NT_FIELDDEFINITIONS: return "NT_FIELDDEFINITIONS";
-    case NT_FIELDDEFINITION: return "NT_FIELDDEFINITION";
-    case NT_FIELDTYPE: return "NT_FIELDTYPE";
-    case NT_MOREFIELDS: return "NT_MOREFIELDS";
-    case NT_DECLATRATIONS: return "NT_DECLATRATIONS";
-    case NT_DECLATRATION: return "NT_DECLATRATION";
-    case NT_GLOBAL_OR_NOT: return "NT_GLOBAL_OR_NOT";
-    case NT_OTHERSTMTS: return "NT_OTHERSTMTS";
-    case NT_STMT: return "NT_STMT";
-    case NT_ASSIGNMENTSTMT: return "NT_ASSIGNMENTSTMT";
-    case NT_SINGLEORRECID: return "NT_SINGLEORRECID";
-    case NT_OPTION_SINGLE_CONSTRUCTED: return "NT_OPTION_SINGLE_CONSTRUCTED";
-    case NT_ONEEXPANSION: return "NT_ONEEXPANSION";
-    case NT_MOREEXPANSIONS: return "NT_MOREEXPANSIONS";
-    case NT_FUNCALLSTMT: return "NT_FUNCALLSTMT";
-    case NT_OUTPUTPARAMETERS: return "NT_OUTPUTPARAMETERS";
-    case NT_INPUTPARAMETERS: return "NT_INPUTPARAMETERS";
-    case NT_ITERATIVESTMT: return "NT_ITERATIVESTMT";
-    case NT_CONDITIONALSTMT: return "NT_CONDITIONALSTMT";
-    case NT_ELSEPART: return "NT_ELSEPART";
-    case NT_IOSTMT: return "NT_IOSTMT";
-    case NT_ARITHMETICEXPRESSION: return "NT_ARITHMETICEXPRESSION";
-    case NT_EXPPRIME: return "NT_EXPPRIME";
-    case NT_TERM: return "NT_TERM";
-    case NT_TERMPRIME: return "NT_TERMPRIME";
-    case NT_FACTOR: return "NT_FACTOR";
-    case NT_HIGHPRECEDENCEOPERATORS: return "NT_HIGHPRECEDENCEOPERATORS";
-    case NT_LOWPRECEDENCEOPERATORS: return "NT_LOWPRECEDENCEOPERATORS";
-    case NT_BOOLEANEXPRESSION: return "NT_BOOLEANEXPRESSION";
-    case NT_VAR: return "NT_VAR";
-    case NT_LOGICALOP: return "NT_LOGICALOP";
-    case NT_RELATIONALOP: return "NT_RELATIONALOP";
-    case NT_RETURNSTMT: return "NT_RETURNSTMT";
-    case NT_OPTIONALRETURN: return "NT_OPTIONALRETURN";
-    case NT_IDLIST: return "NT_IDLIST";
-    case NT_MORE_IDS: return "NT_MORE_IDS";
-    case NT_DEFINETYPESTMT: return "NT_DEFINETYPESTMT";
-    case NT_A: return "NT_A";
-    default: return "INVALID_NON_TERMINAL";
-}
-}
+
 void printParseTree(parseTree *PT, FILE *outfile) {
   if (PT == NULL) {
     return;
@@ -233,32 +145,36 @@ void printParseTree(parseTree *PT, FILE *outfile) {
   }
   if (outfile != NULL) {
     if (PT != NULL) {
-      fprintf(outfile, "%-20s", (PT->lexeme != NULL) ? PT->lexeme : "----");
-      fprintf(outfile, "%-20d", (PT->line != -1) ? PT->line : -1);
-      fprintf(outfile, "%-20s", getTokenName(PT->t.var.t)); // TODO This line needs some fixing
-      if ((PT->t.var.t == TK_RNUM) || (PT->t.var.t == TK_NUM)) {
-        fprintf(outfile, "%-20s", PT->lexeme);
+      fprintf(outfile, "%-25s",
+              (PT->ele.lexeme != NULL) ? PT->ele.lexeme : "----");
+      fprintf(outfile, "%-25d", (PT->ele.line != -1) ? PT->ele.line : -1);
+      fprintf(outfile, "%-25s", getTokenName(PT->ele.symbol.var.t));
+      if ((PT->ele.symbol.var.t == TK_RNUM) ||
+          (PT->ele.symbol.var.t == TK_NUM)) {
+        fprintf(outfile, "%-25s", PT->ele.lexeme);
       } else {
-        fprintf(outfile, "%-20s", "----");
+        fprintf(outfile, "%-25s", "----");
       }
-      if (PT->parent != NULL){
-        fprintf(outfile, "%-20s", getNonTerminal(PT->t.var.nt));
+      if (PT->parent != NULL) {
+        fprintf(outfile, "%-25s", getNonTerminal(PT->ele.symbol.var.nt));
+      } else {
+        fprintf(outfile, "%-25s%-25s%-25s%-25s", "----", "----", "----",
+                "----");
       }
-     else {
-      fprintf(outfile, "%-20s%-20s%-20s%-20s", "----", "----", "----", "----");
+      fprintf(outfile, "%-25s", (PT->no_of_children == 0) ? "YES" : "NO");
+      fprintf(outfile, "%-25s", getTokenName(PT->ele.symbol.var.t));
+      fprintf(outfile, "\n");
     }
-    fprintf(outfile, "%-20s", (PT->no_of_children == 0) ? "YES" : "NO");
-    fprintf(outfile, "%-20s", getTokenName(PT->t.var.t));
-    fprintf(outfile, "\n");
-  }
-  for (int i = 1; i < PT->no_of_children; i++) {
-    if (PT->children[i] != NULL) {
-      printParseTree(PT->children[i], outfile);
+    for (int i = 1; i < PT->no_of_children; i++) {
+      if (PT->children[i] != NULL) {
+        printParseTree(PT->children[i], outfile);
+      }
     }
   }
-}}
+}
+
 int main() {
-  FILE *fp = fopen("Lexer_Test/t5.txt", "r");
+  FILE *fp = fopen("Lexer_Test/testcase1.txt", "r");
   if (fp == NULL) {
     printf("Error: Unable to open testcase file\n");
     return 1;
@@ -294,7 +210,6 @@ int main() {
     fclose(fp);
     return 1;
   }
-  // printf("here0");
   fclose(fp);
   // printf("here");
   FILE *outfile = fopen("parse.txt", "w");
