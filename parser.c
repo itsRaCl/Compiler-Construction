@@ -166,6 +166,64 @@ parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G,
     x--;
   }
 }
+char* getNonTerminal(NON_TERMINAL nt){
+  switch (nt) {
+    case NT_PROGRAM: return "NT_PROGRAM";
+    case NT_MAINFUNCTION: return "NT_MAINFUNCTION";
+    case NT_OTHERFUNCTIONS: return "NT_OTHERFUNCTIONS";
+    case NT_FUNCTION: return "NT_FUNCTION";
+    case NT_INPUT_PAR: return "NT_INPUT_PAR";
+    case NT_OUTPUT_PAR: return "NT_OUTPUT_PAR";
+    case NT_PARAMETER_LIST: return "NT_PARAMETER_LIST";
+    case NT_DATATYPE: return "NT_DATATYPE";
+    case NT_PRIMITIVEDATATYPE: return "NT_PRIMITIVEDATATYPE";
+    case NT_CONSTRUCTEDDATATYPE: return "NT_CONSTRUCTEDDATATYPE";
+    case NT_REMAINING_LIST: return "NT_REMAINING_LIST";
+    case NT_STMTS: return "NT_STMTS";
+    case NT_TYPEDEFINITIONS: return "NT_TYPEDEFINITIONS";
+    case NT_ACTUALORREDEFINED: return "NT_ACTUALORREDEFINED";
+    case NT_TYPEDEFINITION: return "NT_TYPEDEFINITION";
+    case NT_FIELDDEFINITIONS: return "NT_FIELDDEFINITIONS";
+    case NT_FIELDDEFINITION: return "NT_FIELDDEFINITION";
+    case NT_FIELDTYPE: return "NT_FIELDTYPE";
+    case NT_MOREFIELDS: return "NT_MOREFIELDS";
+    case NT_DECLATRATIONS: return "NT_DECLATRATIONS";
+    case NT_DECLATRATION: return "NT_DECLATRATION";
+    case NT_GLOBAL_OR_NOT: return "NT_GLOBAL_OR_NOT";
+    case NT_OTHERSTMTS: return "NT_OTHERSTMTS";
+    case NT_STMT: return "NT_STMT";
+    case NT_ASSIGNMENTSTMT: return "NT_ASSIGNMENTSTMT";
+    case NT_SINGLEORRECID: return "NT_SINGLEORRECID";
+    case NT_OPTION_SINGLE_CONSTRUCTED: return "NT_OPTION_SINGLE_CONSTRUCTED";
+    case NT_ONEEXPANSION: return "NT_ONEEXPANSION";
+    case NT_MOREEXPANSIONS: return "NT_MOREEXPANSIONS";
+    case NT_FUNCALLSTMT: return "NT_FUNCALLSTMT";
+    case NT_OUTPUTPARAMETERS: return "NT_OUTPUTPARAMETERS";
+    case NT_INPUTPARAMETERS: return "NT_INPUTPARAMETERS";
+    case NT_ITERATIVESTMT: return "NT_ITERATIVESTMT";
+    case NT_CONDITIONALSTMT: return "NT_CONDITIONALSTMT";
+    case NT_ELSEPART: return "NT_ELSEPART";
+    case NT_IOSTMT: return "NT_IOSTMT";
+    case NT_ARITHMETICEXPRESSION: return "NT_ARITHMETICEXPRESSION";
+    case NT_EXPPRIME: return "NT_EXPPRIME";
+    case NT_TERM: return "NT_TERM";
+    case NT_TERMPRIME: return "NT_TERMPRIME";
+    case NT_FACTOR: return "NT_FACTOR";
+    case NT_HIGHPRECEDENCEOPERATORS: return "NT_HIGHPRECEDENCEOPERATORS";
+    case NT_LOWPRECEDENCEOPERATORS: return "NT_LOWPRECEDENCEOPERATORS";
+    case NT_BOOLEANEXPRESSION: return "NT_BOOLEANEXPRESSION";
+    case NT_VAR: return "NT_VAR";
+    case NT_LOGICALOP: return "NT_LOGICALOP";
+    case NT_RELATIONALOP: return "NT_RELATIONALOP";
+    case NT_RETURNSTMT: return "NT_RETURNSTMT";
+    case NT_OPTIONALRETURN: return "NT_OPTIONALRETURN";
+    case NT_IDLIST: return "NT_IDLIST";
+    case NT_MORE_IDS: return "NT_MORE_IDS";
+    case NT_DEFINETYPESTMT: return "NT_DEFINETYPESTMT";
+    case NT_A: return "NT_A";
+    default: return "INVALID_NON_TERMINAL";
+}
+}
 void printParseTree(parseTree *PT, FILE *outfile) {
   if (PT == NULL) {
     return;
@@ -177,16 +235,16 @@ void printParseTree(parseTree *PT, FILE *outfile) {
     if (PT != NULL) {
       fprintf(outfile, "%-20s", (PT->lexeme != NULL) ? PT->lexeme : "----");
       fprintf(outfile, "%-20d", (PT->line != -1) ? PT->line : -1);
-      fprintf(outfile, "%-20d",
-              PT->t.var.t); // TODO This line needs some fixing
-
+      fprintf(outfile, "%-20s", getTokenName(PT->t.var.t)); // TODO This line needs some fixing
       if ((PT->t.var.t == TK_RNUM) || (PT->t.var.t == TK_NUM)) {
         fprintf(outfile, "%-20s", PT->lexeme);
       } else {
         fprintf(outfile, "%-20s", "----");
       }
-      // if (PT->parent) aayega
-    } else {
+      if (PT->parent != NULL){
+        fprintf(outfile, "%-20s", getNonTerminal(PT->t.var.nt));
+      }
+     else {
       fprintf(outfile, "%-20s%-20s%-20s%-20s", "----", "----", "----", "----");
     }
     fprintf(outfile, "%-20s", (PT->no_of_children == 0) ? "YES" : "NO");
@@ -198,7 +256,7 @@ void printParseTree(parseTree *PT, FILE *outfile) {
       printParseTree(PT->children[i], outfile);
     }
   }
-}
+}}
 int main() {
   FILE *fp = fopen("Lexer_Test/t5.txt", "r");
   if (fp == NULL) {
