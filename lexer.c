@@ -140,42 +140,42 @@ STATE_INFO getNextState(STATE currentState, char nextSymbol)
             if(nextSymbol=='@')
             return (STATE_INFO){S14, false, NULL_TOKEN, 0};
             else
-            return (STATE_INFO){INVALID, false, NULL_TOKEN, 0};
+            return (STATE_INFO){INVALID, false, NULL_TOKEN, 0, 1};
         }
         case S14:
         {
             if(nextSymbol=='@')
             return (STATE_INFO){START, true, TK_OR, 0};
             else
-            return (STATE_INFO){INVALID, false, NULL_TOKEN, 0,1};
+            return (STATE_INFO){INVALID, false, NULL_TOKEN, 0, 1};
         }
         case S16:
         {
             if(nextSymbol=='=')
             return (STATE_INFO){START, true, TK_NE, 0};
             else
-            return (STATE_INFO){INVALID, false, NULL_TOKEN, 0};
+            return (STATE_INFO){INVALID, false, NULL_TOKEN, 0, 2};
         }
         case S18:
         {
             if(nextSymbol=='&')
             return (STATE_INFO){S19, false, NULL_TOKEN, 0};
             else
-            return (STATE_INFO){INVALID, false, NULL_TOKEN, 0};
+            return (STATE_INFO){INVALID, false, NULL_TOKEN, 0, 3};
         }
         case S19:
         {
             if(nextSymbol=='&')
             return (STATE_INFO){START, true, TK_AND, 0};
             else
-            return (STATE_INFO){INVALID, false, NULL_TOKEN, 0};
+            return (STATE_INFO){INVALID, false, NULL_TOKEN, 0, 3};
         }
         case S21:
         {
             if(nextSymbol=='=')
             return (STATE_INFO){START, true, TK_EQ, 0};
             else
-            return (STATE_INFO){INVALID, false, NULL_TOKEN, 0};
+            return (STATE_INFO){INVALID, false, NULL_TOKEN, 0, 4};
         }
         case S23:
         {
@@ -205,7 +205,7 @@ STATE_INFO getNextState(STATE currentState, char nextSymbol)
             if(nextSymbol=='-')
             return (STATE_INFO){START, true, TK_ASSIGNOP, 0};
             else
-            return (STATE_INFO){INVALID, false, NULL_TOKEN, 0};
+            return (STATE_INFO){INVALID, false, NULL_TOKEN, 0, 5};
         }
         case S33:
         {
@@ -216,18 +216,18 @@ STATE_INFO getNextState(STATE currentState, char nextSymbol)
         }
         case S37:
         {
-            if((nextSymbol>='a'&&nextSymbol<='z')||(nextSymbol>='A'&&nextSymbol<='Z') ||(nextSymbol>='0'&&nextSymbol<='9'))
+            if((nextSymbol>='a'&&nextSymbol<='z')||(nextSymbol>='A'&&nextSymbol<='Z'))
             {
                 return (STATE_INFO){S38, false, NULL_TOKEN, 0};
             }
             else
             {
-                return (STATE_INFO){INVALID, false, NULL_TOKEN, 0};
+                return (STATE_INFO){INVALID, false, NULL_TOKEN, 0, 6};
             }
         }
         case S38:
         {
-            if((nextSymbol>='a'&&nextSymbol<='z')||(nextSymbol>='A'&&nextSymbol<='Z') ||(nextSymbol>='0'&&nextSymbol<='9'))
+            if((nextSymbol>='a'&&nextSymbol<='z')||(nextSymbol>='A'&&nextSymbol<='Z'))
             {
                 return (STATE_INFO){S38, false, NULL_TOKEN, 0};
             }
@@ -259,7 +259,7 @@ STATE_INFO getNextState(STATE currentState, char nextSymbol)
             }
             else
             {
-                return (STATE_INFO){INVALID, false, NULL_TOKEN, 0};
+                return (STATE_INFO){INVALID, false, NULL_TOKEN, 0, 7};
             }
         }
         case S42:
@@ -307,7 +307,7 @@ STATE_INFO getNextState(STATE currentState, char nextSymbol)
             }
             else
             {
-                return (STATE_INFO){INVALID, false, NULL_TOKEN, 0};
+                return (STATE_INFO){INVALID, false, NULL_TOKEN, 0, 8};
             }
         }
         case S48:
@@ -333,7 +333,7 @@ STATE_INFO getNextState(STATE currentState, char nextSymbol)
             }
             else
             {
-                return (STATE_INFO){INVALID, false, NULL_TOKEN, 0};
+                return (STATE_INFO){INVALID, false, NULL_TOKEN, 0, 9};
             }
         }
         case S51:
@@ -344,7 +344,7 @@ STATE_INFO getNextState(STATE currentState, char nextSymbol)
             }
             else
             {
-                return (STATE_INFO){INVALID, false, NULL_TOKEN, 0};
+                return (STATE_INFO){INVALID, false, NULL_TOKEN, 0, 10};
             }
         }
         case S52:
@@ -355,7 +355,7 @@ STATE_INFO getNextState(STATE currentState, char nextSymbol)
             }
             else
             {
-                return (STATE_INFO){INVALID, false, NULL_TOKEN, 0};
+                return (STATE_INFO){INVALID, false, NULL_TOKEN, 0, 11};
             }
         }
         case S55:
@@ -667,7 +667,58 @@ void handle_invalid_error(STATE_INFO state, twinBuffer B, int start, int end)
     {
         case 1:
         {
-            printf("Expected @@@\n");
+            printf(": Expected @@@\n");
+            break;
+        }
+        case 2:
+        {
+            printf(": Expected !=\n");
+            break;
+        }
+        case 3:
+        {
+            printf(": Expected &&&\n");
+            break;
+        }
+        case 4:
+        {
+            printf(": Expected ==\n");
+            break;
+        }
+        case 5:
+        {
+            printf(": Expected <---\n");
+            break;
+        }
+        case 6:
+        {
+            printf(": Expected a letter [a-z]|[A-Z] after _\n");
+            break;
+        }
+        case 7:
+        {
+            printf(": Expected a lowercase letter [a-z] after #\n");
+            break;
+        }
+        case 8:
+        {
+            printf(": Expected a two digits [0-9] after decimal . but got one\n");
+            break;
+        }
+        case 9:
+        {
+            printf(": Expected a digit [0-9] or +|- after E\n");
+            break;
+        }
+        case 10:
+        {
+            printf(": Expected a digit [0-9] after +|-|E\n");
+            break;
+        }
+        case 11:
+        {
+            printf(": Expected a two digits [0-9] after E|+|- but got one\n");
+            break;
         }
         default:
         {
