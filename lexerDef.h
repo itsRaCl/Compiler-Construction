@@ -165,6 +165,7 @@ typedef struct STATE_INFO {
   bool isReturningToken;
   TOKEN_TYPE tokenType;
   int redaction;
+  int error;
 } STATE_INFO;
 
 typedef struct TWIN_BUFFER {

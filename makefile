@@ -22,5 +22,9 @@ run_parser: lexer.o trie.o string.o vector.o parser.o utils.o
 run: run_parser
 	./run_parser
 
+run_lexer: lexer.o trie.o string.o vector.o 
+	gcc -o run_lexer lexer.o trie.o string.o vector.o
+	./run_lexer
+
 clean:
 	rm *.o run_parser

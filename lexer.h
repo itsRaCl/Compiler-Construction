@@ -7,7 +7,7 @@
 
 
 
-FILE *getStream(FILE *fp);
+void getStream(FILE *fp);
 tokenInfo getNextToken(twinBuffer B, FILE *fp);
 void removeComments(char *testcaseFile, char *cleanFile);
 vector* getAllTokens(FILE* fp);
