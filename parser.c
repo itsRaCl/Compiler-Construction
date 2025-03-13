@@ -23,24 +23,30 @@ void createParseTable(FirstFollow F, table *T) {
   }
 }
 
-parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G,
-                                vector *input) {
+parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G, vector *input) {
   int n = input->size;
   int stack[200];
+  bool stack_terminal[200];
 
   parseTree *ptree[200];
   int top = -1;
   int treetop = -1;
 
   stack[++top] = DOLLAR;
+  stack_terminal[top] = true;
   stack[++top] = NT_PROGRAM;
+  stack_terminal[top] = false;
 
   ptree[++treetop] = (parseTree *)malloc(sizeof(parseTree));
   if (ptree[treetop] == NULL) {
     printf("Error: Memory allocation failed\n");
     exit(1);
   }
-  ptree[treetop]->t.type = NT_PROGRAM;
+  ptree[treetop]->t.var.nt = NT_PROGRAM;
+  ptree[treetop]->t.terminal = false;
+  ptree[treetop]->lexeme = NULL;
+  ptree[treetop]->line = 0;
+  ptree[treetop]->lexemeSize = 0;
   ptree[treetop]->parent = NULL;
   ptree[treetop]->no_of_children = 0;
 
@@ -56,34 +62,32 @@ parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G,
 
   printf("Parsing Started\n");
 
-  while (i < n && top > 0) {
+  int x=5;
+  while (i < n && top >= 0) {
     printf("parsing input %d\n", i);
 
-    if (stack[top] == get(input, i)->type) {
+    if (stack[top] == get(input, i)->type && stack_terminal[top] == true) {
       printf("Matched token %d at input %d\n", get(input, i)->type, i);
       if (stack[top] == DOLLAR) {
         printf("Parsing Successful\n");
         return root;
       } else {
-        ptree[treetop]->t.lexeme = get(input, i)->lexeme;
-        ptree[treetop]->t.line = get(input, i)->line;
-        ptree[treetop]->t.lexemeSize = get(input, i)->lexemeSize;
-        ptree[treetop]->t.type = get(input, i)->type;
+        ptree[treetop]->lexeme = get(input, i)->lexeme;
+        ptree[treetop]->line = get(input, i)->line;
+        ptree[treetop]->lexemeSize = get(input, i)->lexemeSize;
+        ptree[treetop]->t.var.t = get(input, i)->type;
+        ptree[treetop]->t.terminal = true;
         top--;
         treetop--;
         i++;
         continue;
       }
     }
-    printf("Top of stack %d\n", stack[top]);
+    printf("Top of stack %d. Terminal : %d\n", stack[top], stack_terminal[top]);
     printf("Current token %d\n", get(input, i)->type);
-    printf("a\n");
-    grammar_rule rule =
-        G.rules[stack[top]][T.table[stack[top]][get(input, i)->type]];
-    printf("b\n");
+    grammar_rule rule = G.rules[stack[top]][T.table[stack[top]][get(input, i)->type]];
     if (rule.element_count == 0) {
-      printf("Error: Unexpected token %d at line %d\n", get(input, i)->type,
-             get(input, i)->line);
+      printf("Error: Unexpected token %d at line %d\n", get(input, i)->type, get(input, i)->line);
       return NULL;
     }
     // print stack
@@ -91,36 +95,73 @@ parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G,
     for (int j = 0; j <= top; j++) {
       printf("%d ", stack[j]);
     }
+    printf("\n       ");
+    for(int j=0;j<=top;j++){
+      printf("%d ",stack_terminal[j]);
+    }
     printf("\n");
     top--;
     printf("Popped top of stack\n");
     parseTree *temp = ptree[treetop];
     treetop--;
     for (int j = rule.element_count - 1; j >= 0; j--) {
+
+      // check if epsilon
+      if (rule.elements[j].terminal==true && rule.elements[j].var.t == EPSILLON) {
+        continue;
+      }
+
+      // incrementing top
       top++;
       treetop += 1;
-      stack[top] = rule.elements[j].var.nt;
+      
+      // pushing element on stack
+      if(rule.elements[j].terminal){
+        stack_terminal[top] = true;
+        stack[top] = rule.elements[j].var.t;
+      }
+      else{
+        stack_terminal[top] = false;
+        stack[top] = rule.elements[j].var.nt;
+      }
+
+      // creating parse tree node
       ptree[treetop] = (parseTree *)malloc(sizeof(parseTree));
       if (ptree[treetop] == NULL) {
         printf("Error: Memory allocation failed\n");
         exit(1);
       }
-      ptree[treetop]->t = *(TOKEN *)malloc(sizeof(TOKEN));
-      ptree[treetop]->t.type = stack[top];
-      ptree[treetop]->t.lexeme = NULL;
-      ptree[treetop]->t.line = -1;
+      if(stack_terminal[top]){
+        ptree[treetop]->t.var.t = stack[top];
+        ptree[treetop]->t.terminal = true;
+      }
+      else{
+        ptree[treetop]->t.var.nt = stack[top];
+        ptree[treetop]->t.terminal = false;
+      }
+      ptree[treetop]->lexeme = NULL;
+      ptree[treetop]->line = -1;
+      ptree[treetop]->lexemeSize = 0;
       ptree[treetop]->parent = temp;
       ptree[treetop]->no_of_children = 0;
+
+      // adding child to parent
       temp->children[temp->no_of_children] = ptree[treetop];
       temp->no_of_children++;
+
       // print stack
       printf("Pushed %d to stack\n", stack[top]);
       printf("Stack: ");
       for (int j = 0; j <= top; j++) {
         printf("%d ", stack[j]);
       }
+      printf("\n       ");
+      for(int j=0;j<=top;j++){
+        printf("%d ",stack_terminal[j]);
+      }
       printf("\n");
     }
+    x--;
   }
 }
 void printParseTree(parseTree *PT, FILE *outfile){
@@ -156,7 +197,7 @@ void printParseTree(parseTree *PT, FILE *outfile){
     }
 }
 int main() {
-  FILE *fp = fopen("Lexer_Test/t2.txt", "r");
+  FILE *fp = fopen("Lexer_Test/t5.txt", "r");
   if (fp == NULL) {
     printf("Error: Unable to open testcase file\n");
     return 1;
