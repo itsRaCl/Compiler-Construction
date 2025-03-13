@@ -1,5 +1,6 @@
 #include "lexerDef.h"
 #include "parserDef.h"
+#include "utils.h"
 #include <stdlib.h>
 
 void firstUnion(FirstFollow *ff, NON_TERMINAL nt1, NON_TERMINAL nt2) {
@@ -838,8 +839,8 @@ grammar initializeGrammar() {
   G.has_epsillon[NT_A] = false;
   return G;
 }
-int main() {
-  grammar G = initializeGrammar();
-  FirstFollow ff = computeFirstFollowSet(G);
-  return 0;
-}
+// int main() {
+//   grammar G = initializeGrammar();
+//   FirstFollow ff = computeFirstFollowSet(G);
+//   return 0;
+// }
