@@ -1138,6 +1138,42 @@ void handle_invalid_error(STATE_INFO state, twinBuffer B, int start, int end)
 
 }
 
+void handle_invalid_error(STATE_INFO state, twinBuffer B, int start, int end)
+{
+    printf("Line no. %d ", B->line);
+    printf("Error: ");
+    if(start==end)
+    {
+        printf("Unknown symbol <");
+        printf("%c", B->buffer[start]);
+        printf(">\n");
+        B->index = (end+1)%(2*BUFFER_SIZE);
+        return;
+    }
+            printf("Unknown pattern <");
+            while (start!=end)
+            {
+                printf("%c", B->buffer[start]);
+                start++;
+                start = start%(2*BUFFER_SIZE);
+            }
+            printf("> ");
+            B->index = end;
+    int error_type=state.error;
+    switch (error_type)
+    {
+        case 1:
+        {
+            printf("Expected @@@\n");
+        }
+        default:
+        {
+            printf("\n");
+        }
+    }
+
+}
+
 
 tokenInfo getNextToken(twinBuffer B, FILE* fp)
 {
@@ -1316,6 +1352,7 @@ void printbuffer(twinBuffer B)
   }
 }
 
+<<<<<<< Updated upstream
 void printbuffer(twinBuffer B) {
   for (int i = 0; i < 2 * BUFFER_SIZE; i++) {
     printf("%c ", B->buffer[i]);
@@ -1367,6 +1404,8 @@ void printVector(Vector v) {
            v->tokens[i]->lexeme, getTokenName(v->tokens[i]->type));
   }
 =======
+=======
+>>>>>>> Stashed changes
 void getStream(FILE* fp)
 {
     twinBuffer B = (twinBuffer)malloc(sizeof(TWIN_BUFFER));
@@ -1407,6 +1446,9 @@ void getStream(FILE* fp)
     } 
     free(B);
 
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 }
 
@@ -1449,6 +1491,7 @@ FILE *getStream(FILE *fp) {
   return stream;
 }
 
+<<<<<<< Updated upstream
 void removeComments(char *testcaseFile, char *cleanFile) {
   FILE *testcaseFPTR = fopen(testcaseFile, "r");
 
@@ -1499,6 +1542,8 @@ void removeComments(char *testcaseFile, char *cleanFile) {
 //     return 0;
 // }
 =======
+=======
+>>>>>>> Stashed changes
 int main()
 {
     FILE* fp = fopen("Lexer_Test/t1.txt", "r");
@@ -1510,5 +1555,9 @@ int main()
     getStream(fp);
     fclose(fp);
     return 0;
+<<<<<<< Updated upstream
+}
+>>>>>>> Stashed changes
+=======
 }
 >>>>>>> Stashed changes
