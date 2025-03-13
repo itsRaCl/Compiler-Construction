@@ -23,4 +23,4 @@ run: run_parser
 	./run_parser
 
 clean:
-	del /Q *.o run_parser.exe
+	rm *.o run_parser

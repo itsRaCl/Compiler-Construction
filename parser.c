@@ -23,7 +23,8 @@ void createParseTable(FirstFollow F, table *T) {
   }
 }
 
-parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G, vector *input) {
+parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G,
+                                vector *input) {
   int n = input->size;
   int stack[200];
   bool stack_terminal[200];
@@ -62,7 +63,7 @@ parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G, vector *input
 
   printf("Parsing Started\n");
 
-  int x=5;
+  int x = 5;
   while (i < n && top >= 0) {
     printf("parsing input %d\n", i);
 
@@ -85,9 +86,11 @@ parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G, vector *input
     }
     printf("Top of stack %d. Terminal : %d\n", stack[top], stack_terminal[top]);
     printf("Current token %d\n", get(input, i)->type);
-    grammar_rule rule = G.rules[stack[top]][T.table[stack[top]][get(input, i)->type]];
+    grammar_rule rule =
+        G.rules[stack[top]][T.table[stack[top]][get(input, i)->type]];
     if (rule.element_count == 0) {
-      printf("Error: Unexpected token %d at line %d\n", get(input, i)->type, get(input, i)->line);
+      printf("Error: Unexpected token %d at line %d\n", get(input, i)->type,
+             get(input, i)->line);
       return NULL;
     }
     // print stack
@@ -96,8 +99,8 @@ parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G, vector *input
       printf("%d ", stack[j]);
     }
     printf("\n       ");
-    for(int j=0;j<=top;j++){
-      printf("%d ",stack_terminal[j]);
+    for (int j = 0; j <= top; j++) {
+      printf("%d ", stack_terminal[j]);
     }
     printf("\n");
     top--;
@@ -107,20 +110,20 @@ parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G, vector *input
     for (int j = rule.element_count - 1; j >= 0; j--) {
 
       // check if epsilon
-      if (rule.elements[j].terminal==true && rule.elements[j].var.t == EPSILLON) {
+      if (rule.elements[j].terminal == true &&
+          rule.elements[j].var.t == EPSILLON) {
         continue;
       }
 
       // incrementing top
       top++;
       treetop += 1;
-      
+
       // pushing element on stack
-      if(rule.elements[j].terminal){
+      if (rule.elements[j].terminal) {
         stack_terminal[top] = true;
         stack[top] = rule.elements[j].var.t;
-      }
-      else{
+      } else {
         stack_terminal[top] = false;
         stack[top] = rule.elements[j].var.nt;
       }
@@ -131,11 +134,10 @@ parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G, vector *input
         printf("Error: Memory allocation failed\n");
         exit(1);
       }
-      if(stack_terminal[top]){
+      if (stack_terminal[top]) {
         ptree[treetop]->t.var.t = stack[top];
         ptree[treetop]->t.terminal = true;
-      }
-      else{
+      } else {
         ptree[treetop]->t.var.nt = stack[top];
         ptree[treetop]->t.terminal = false;
       }
@@ -156,45 +158,46 @@ parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G, vector *input
         printf("%d ", stack[j]);
       }
       printf("\n       ");
-      for(int j=0;j<=top;j++){
-        printf("%d ",stack_terminal[j]);
+      for (int j = 0; j <= top; j++) {
+        printf("%d ", stack_terminal[j]);
       }
       printf("\n");
     }
     x--;
   }
 }
-void printParseTree(parseTree *PT, FILE *outfile){
-      if (PT == NULL) {
-        return;
-    }
-    if (PT->no_of_children != 0 && PT->children[0] != NULL){
-        printParseTree(PT->children[0], outfile);
-    }
-    if (outfile != NULL){
-        if (PT != NULL) {
-          fprintf(outfile, "%-20s", (PT->t.lexeme != NULL) ? PT->t.lexeme : "----");
-          fprintf(outfile, "%-20d", (PT->t.line != -1) ? PT->t.line : -1);
-          fprintf(outfile, "%-20d", PT->t.type);
+void printParseTree(parseTree *PT, FILE *outfile) {
+  if (PT == NULL) {
+    return;
+  }
+  if (PT->no_of_children != 0 && PT->children[0] != NULL) {
+    printParseTree(PT->children[0], outfile);
+  }
+  if (outfile != NULL) {
+    if (PT != NULL) {
+      fprintf(outfile, "%-20s", (PT->lexeme != NULL) ? PT->lexeme : "----");
+      fprintf(outfile, "%-20d", (PT->line != -1) ? PT->line : -1);
+      fprintf(outfile, "%-20d",
+              PT->t.var.t); // TODO This line needs some fixing
 
-          if ((PT->t.type == TK_RNUM) || (PT->t.type == TK_NUM)) {
-              fprintf(outfile, "%-20s", PT->t.lexeme);
-          } else {
-              fprintf(outfile, "%-20s", "----");
-          }
-          // if (PT->parent) aayega
-          } else {
-              fprintf(outfile, "%-20s%-20s%-20s%-20s", "----", "----", "----", "----");
-          }
-          fprintf(outfile, "%-20s", (PT->no_of_children == 0) ? "YES" : "NO");
-          fprintf(outfile, "%-20s", getTokenName(PT->t.type)); 
-          fprintf(outfile, "\n");
+      if ((PT->t.var.t == TK_RNUM) || (PT->t.var.t == TK_NUM)) {
+        fprintf(outfile, "%-20s", PT->lexeme);
+      } else {
+        fprintf(outfile, "%-20s", "----");
       }
-    for(int i = 1; i < PT->no_of_children; i++){
-        if (PT->children[i]!=NULL){
-        printParseTree(PT->children[i],outfile);
-        }
+      // if (PT->parent) aayega
+    } else {
+      fprintf(outfile, "%-20s%-20s%-20s%-20s", "----", "----", "----", "----");
     }
+    fprintf(outfile, "%-20s", (PT->no_of_children == 0) ? "YES" : "NO");
+    fprintf(outfile, "%-20s", getTokenName(PT->t.var.t));
+    fprintf(outfile, "\n");
+  }
+  for (int i = 1; i < PT->no_of_children; i++) {
+    if (PT->children[i] != NULL) {
+      printParseTree(PT->children[i], outfile);
+    }
+  }
 }
 int main() {
   FILE *fp = fopen("Lexer_Test/t5.txt", "r");
@@ -236,7 +239,7 @@ int main() {
   // printf("here0");
   fclose(fp);
   // printf("here");
-  FILE *outfile = fopen("parse.txt","w");
+  FILE *outfile = fopen("parse.txt", "w");
   if (outfile == NULL) {
     printf("Error: Unable to open file\n");
     return 1;
@@ -245,8 +248,8 @@ int main() {
     printf("Error: Parsing failed. Cannot print parse tree.\n");
     fclose(outfile);
     return 1;
-}
-  printParseTree(root,outfile);
+  }
+  printParseTree(root, outfile);
   fclose(outfile);
   return 0;
 }
