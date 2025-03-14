@@ -35,6 +35,7 @@ parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G,
   parseTree *root = malloc(sizeof(parseTree));
   root->ele.symbol.terminal = false;
   root->ele.symbol.var.nt = NT_PROGRAM;
+  root->ele.line = -1;
   root->parent = NULL;
 
   treeNodeStack[treeNodeStackTop] = root;
@@ -55,6 +56,7 @@ parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G,
 
   // Following Naming in Slides
   while (lookAheadPointer < input->size && symbolStackTop >= 0) {
+    printf("%d\n", lookAheadPointer);
     grammar_element *X = symbolStack[symbolStackTop];
     TOKEN *a = get(input, lookAheadPointer);
 
@@ -74,6 +76,9 @@ parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G,
         symbolStackTop--;
         treeNodeStackTop--;
         lookAheadPointer++;
+      } else {
+        printf("ERROR RECOVERY REACHED (2)");
+        break;
       }
     } else {
       NON_TERMINAL nt = X->var.nt;
@@ -94,6 +99,7 @@ parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G,
           parseTree *childNode = (parseTree *)malloc(sizeof(parseTree));
           childNode->ele.symbol.terminal = true;
           childNode->ele.symbol.var.t = EPSILLON;
+          childNode->ele.line = -1;
           childNode->parent = node;
           childNode->no_of_children = 0;
           node->children[0] = childNode;
@@ -105,6 +111,7 @@ parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G,
             parseTree *childNode = (parseTree *)malloc(sizeof(parseTree));
 
             childNode->ele.symbol.terminal = rule.elements[i].terminal;
+            childNode->ele.line = -1;
 
             if (rule.elements[i].terminal) {
               childNode->ele.symbol.var.t = rule.elements[i].var.t;
@@ -147,8 +154,13 @@ void printParseTree(parseTree *PT, FILE *outfile) {
     if (PT != NULL) {
       fprintf(outfile, "%-25s",
               (PT->ele.lexeme != NULL) ? PT->ele.lexeme : "----");
-      fprintf(outfile, "%-25d", (PT->ele.line != -1) ? PT->ele.line : -1);
-      fprintf(outfile, "%-25s", getTokenName(PT->ele.symbol.var.t));
+      fprintf(outfile, "%-25d", PT->ele.line);
+
+      if (PT->ele.symbol.terminal) {
+        fprintf(outfile, "%-25s", getTokenName(PT->ele.symbol.var.t));
+      } else {
+        fprintf(outfile, "%-25s", getNonTerminal(PT->ele.symbol.var.nt));
+      }
       if ((PT->ele.symbol.var.t == TK_RNUM) ||
           (PT->ele.symbol.var.t == TK_NUM)) {
         fprintf(outfile, "%-25s", PT->ele.lexeme);
@@ -156,14 +168,14 @@ void printParseTree(parseTree *PT, FILE *outfile) {
         fprintf(outfile, "%-25s", "----");
       }
       if (PT->parent != NULL) {
-        fprintf(outfile, "%-25s", getNonTerminal(PT->ele.symbol.var.nt));
+        fprintf(outfile, "%-25s",
+                getNonTerminal(PT->parent->ele.symbol.var.nt));
+        fprintf(outfile, "%-25s", (PT->no_of_children == 0) ? "YES" : "NO");
+        fprintf(outfile, "%-25s", getTokenName(PT->ele.symbol.var.t));
+        fprintf(outfile, "\n");
       } else {
-        fprintf(outfile, "%-25s%-25s%-25s%-25s", "----", "----", "----",
-                "----");
+        fprintf(outfile, "%-25s%-25s%-25s\n", "----", "----", "----");
       }
-      fprintf(outfile, "%-25s", (PT->no_of_children == 0) ? "YES" : "NO");
-      fprintf(outfile, "%-25s", getTokenName(PT->ele.symbol.var.t));
-      fprintf(outfile, "\n");
     }
     for (int i = 1; i < PT->no_of_children; i++) {
       if (PT->children[i] != NULL) {
@@ -174,7 +186,7 @@ void printParseTree(parseTree *PT, FILE *outfile) {
 }
 
 int main() {
-  FILE *fp = fopen("Lexer_Test/testcase1.txt", "r");
+  FILE *fp = fopen("Lexer_Test/t6.txt", "r");
   if (fp == NULL) {
     printf("Error: Unable to open testcase file\n");
     return 1;
