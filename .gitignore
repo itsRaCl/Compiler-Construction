@@ -1,2 +1,4 @@
 a.out
 *.o
+run_parser
+run_lexer

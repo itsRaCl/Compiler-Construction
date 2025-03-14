@@ -57,7 +57,9 @@ void computeFirstRec(FirstFollow *ff, NON_TERMINAL nt, grammar G,
       if (!ff->first_has_epsillon[curr]) {
         break;
       }
-      ff->follow_rule[nt] = rule_no;
+      if (j == rule.element_count - 1) {
+        ff->follow_rule[nt] = rule_no;
+      }
       j++;
     }
 

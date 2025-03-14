@@ -20,6 +20,13 @@ void createParseTable(FirstFollow F, table *T) {
         T->table[i][F.follow[i][j]] = F.follow_rule[i];
       }
     }
+    else {
+      for (int j = 0; j < F.follow_count[i]; j++) {
+        if (T->table[i][F.follow[i][j]] == -1) {
+          T->table[i][F.follow[i][j]] = -2;
+        }
+      }
+    }
   }
 }
 
@@ -31,6 +38,7 @@ parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G,
   int symbolStackTop = 0;
   int treeNodeStackTop = 0;
   int lookAheadPointer = 0;
+  int oldLookAheadPointer = -1;
 
   parseTree *root = malloc(sizeof(parseTree));
   root->ele.symbol.terminal = false;
@@ -77,15 +85,33 @@ parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G,
         treeNodeStackTop--;
         lookAheadPointer++;
       } else {
-        printf("ERROR RECOVERY REACHED (2)");
-        break;
+
+        printf("Line %d: Syntax Error. Token %s does not match with %s\n",
+               a->line, getTokenName(a->type), getTokenName(X->var.t));
+        free(X);
+        symbolStack[symbolStackTop] = NULL;
+        symbolStackTop--;
+        treeNodeStackTop--;
       }
     } else {
       NON_TERMINAL nt = X->var.nt;
       int rule_no = T.table[nt][a->type];
       if (rule_no == -1) {
-        printf("ERROR RECOVERY REACHED (1)");
-        break;
+        printf("Line %d: Syntax Error. Invalid token %s\n", a->line,
+               getTokenName(a->type));
+        lookAheadPointer++;
+      } else if (rule_no == -2) {
+        if (lookAheadPointer == oldLookAheadPointer) {
+          lookAheadPointer++; 
+          continue;
+        } else {
+          oldLookAheadPointer = lookAheadPointer;
+          printf("Line %d: Syntax Error. Token %s does not match with non-terminal %s\n", a->line, getTokenName(a->type), getNonTerminal(nt));
+          free(X);
+          symbolStack[symbolStackTop] = NULL;
+          symbolStackTop--;
+          treeNodeStackTop--;
+        }
       } else {
         grammar_rule rule = G.rules[nt][rule_no];
         parseTree *node = treeNodeStack[treeNodeStackTop];
