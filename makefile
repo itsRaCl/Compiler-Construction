@@ -27,4 +27,4 @@ run_lexer: lexer.o trie.o string.o vector.o
 	./run_lexer
 
 clean:
-	rm *.o run_parser
+	rm *.o run_parser run_lexer
