@@ -20,6 +20,13 @@ void createParseTable(FirstFollow F, table *T) {
         T->table[i][F.follow[i][j]] = F.follow_rule[i];
       }
     }
+    else {
+      for (int j = 0; j < F.follow_count[i]; j++) {
+        if (T->table[i][F.follow[i][j]] == -1) {
+          T->table[i][F.follow[i][j]] = -2;
+        }
+      }
+    }
   }
 }
 
@@ -174,7 +181,7 @@ void printParseTree(parseTree *PT, FILE *outfile) {
 }
 
 int main() {
-  FILE *fp = fopen("Lexer_Test/testcase1.txt", "r");
+  FILE *fp = fopen("Lexer_Test/t6.txt", "r");
   if (fp == NULL) {
     printf("Error: Unable to open testcase file\n");
     return 1;

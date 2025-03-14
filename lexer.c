@@ -999,16 +999,16 @@ void removeComments(char *testcaseFile, char *cleanFile)
     fclose(cleanflieFPTR);
 }
 
-int main()
-{
-    FILE* fp = fopen("Lexer_Test/t6.txt", "r");
-    if(fp==NULL)
-    {
-        printf("Error: Unable to open testcase file\n");
-        return 1;
-    }
-    // getStream(fp);
-    getAllTokens(fp);
-    fclose(fp);
-    return 0;
-}
+// int main()
+// {
+//     FILE* fp = fopen("Lexer_Test/t6.txt", "r");
+//     if(fp==NULL)
+//     {
+//         printf("Error: Unable to open testcase file\n");
+//         return 1;
+//     }
+//     // getStream(fp);
+//     getAllTokens(fp);
+//     fclose(fp);
+//     return 0;
+// }
