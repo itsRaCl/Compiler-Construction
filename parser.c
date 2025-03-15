@@ -46,7 +46,7 @@ parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G, FILE *fp) {
   int symbolStackTop = 0;
   int treeNodeStackTop = 0;
   int lookAheadPointer = 0;
-  int oldLookAheadPointer = -1;
+  int oldLineNo = -1;
 
   parseTree *root = malloc(sizeof(parseTree));
   root->ele.symbol.terminal = false;
@@ -93,32 +93,48 @@ parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G, FILE *fp) {
         lookAheadPointer++;
         a = nextToken(B, fp);
       } else {
-
-        printf("Line %d: Syntax Error. Token %s does not match with %s\n",
-               a->line, getTokenName(a->type), getTokenName(X->var.t));
-        free(X);
-        symbolStack[symbolStackTop] = NULL;
-        symbolStackTop--;
-        treeNodeStackTop--;
+        if (oldLineNo == a->line) {
+          lookAheadPointer++;
+          a = nextToken(B, fp);
+          continue;
+        } else {
+          oldLineNo = a->line;
+          printf("Line %d: Syntax Error. The token %s for lexeme %s does not "
+                 "match with the expected token %s\n",
+                 a->line, getTokenName(a->type), a->lexeme,
+                 getTokenName(X->var.t));
+          free(X);
+          symbolStack[symbolStackTop] = NULL;
+          symbolStackTop--;
+          treeNodeStackTop--;
+        }
       }
     } else {
       NON_TERMINAL nt = X->var.nt;
       int rule_no = T.table[nt][a->type];
       if (rule_no == -1) {
-        printf("Line %d: Syntax Error. Invalid token %s\n", a->line,
-               getTokenName(a->type));
-        lookAheadPointer++;
-        a = nextToken(B, fp);
-      } else if (rule_no == -2) {
-        if (lookAheadPointer == oldLookAheadPointer) {
+        if (oldLineNo == a->line) {
           lookAheadPointer++;
           a = nextToken(B, fp);
           continue;
         } else {
-          oldLookAheadPointer = lookAheadPointer;
-          printf("Line %d: Syntax Error. Token %s does not match with "
-                 "non-terminal %s\n",
-                 a->line, getTokenName(a->type), getNonTerminal(nt));
+          oldLineNo = a->line;
+          printf("Line %d: Syntax Error. Invalid token %s encountered with "
+                 "value %s stack top %s\n",
+                 a->line, getTokenName(a->type), a->lexeme, getNonTerminal(nt));
+          lookAheadPointer++;
+          a = nextToken(B, fp);
+        }
+      } else if (rule_no == -2) {
+        if (oldLineNo == a->line) {
+          lookAheadPointer++;
+          a = nextToken(B, fp);
+          continue;
+        } else {
+          oldLineNo = a->line;
+          printf("Line %d: Syntax Error. Invalid token %s encountered with "
+                 "value %s stack top %s\n",
+                 a->line, getTokenName(a->type), a->lexeme, getNonTerminal(nt));
           free(X);
           symbolStack[symbolStackTop] = NULL;
           symbolStackTop--;
@@ -224,7 +240,7 @@ void printParseTree(parseTree *PT, FILE *outfile) {
 }
 
 int main() {
-  FILE *fp = fopen("Lexer_Test/testcase1.txt", "r");
+  FILE *fp = fopen("Lexer_Test/testcase8.txt", "r");
   if (fp == NULL) {
     printf("Error: Unable to open testcase file\n");
     return 1;
