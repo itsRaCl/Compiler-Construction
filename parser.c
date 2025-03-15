@@ -193,7 +193,13 @@ parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G, FILE *fp) {
       }
     }
   }
-
+  free(B);
+  while (symbolStackTop >= 0) {
+    if (symbolStack[symbolStackTop] != NULL) {
+      free(symbolStack[symbolStackTop]);
+    }
+    symbolStackTop--;
+  }
   return root;
 }
 
@@ -240,7 +246,7 @@ void printParseTree(parseTree *PT, FILE *outfile) {
 }
 
 /*int main() {*/
-/*FILE *fp = fopen("Lexer_Test/t8.txt", "r");*/
+/*FILE *fp = fopen("Lexer_Test/t7.txt", "r");*/
 /*if (fp == NULL) {*/
 /*printf("Error: Unable to open testcase file\n");*/
 /*return 1;*/
@@ -289,6 +295,7 @@ void printParseTree(parseTree *PT, FILE *outfile) {
 /*return 1;*/
 /*}*/
 /*printParseTree(root, outfile);*/
+
 /*fclose(outfile);*/
 /*return 0;*/
 /*}*/
