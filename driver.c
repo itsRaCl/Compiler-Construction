@@ -37,8 +37,7 @@ int main(int argc, char *argv[]) {
     case 2:
       printf("==== Lexer Tokens ====\n");
       FILE *fp = fopen(argv[1], "r");
-      Vector tokens = getAllTokens(fp);
-      printVector(tokens);
+      getStream(fp);
       printf("==== Lexer Tokens Complete ====\n\n\n");
       break;
     case 3:
