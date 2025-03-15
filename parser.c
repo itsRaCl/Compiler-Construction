@@ -1,3 +1,12 @@
+/*
+  Group Number: 43
+  NAME                 : ID
+  Gyanesh Roy Bhowmik  : 2022A7PS0035P
+  Ritvik Singh         : 2022A7PS0045P
+  Madhav Gupta         : 2022A7PS0078P
+  Clerk Raj Anuj       : 2022A7PS0080P
+  Dev Chheda           : 2022A7PS0134P 
+*/
 #include "lexer.h"
 #include "lexerDef.h"
 #include "parserDef.h"
@@ -278,9 +287,12 @@ parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G, FILE *fp) {
   }
   // check if the input has been completely parsed
   // and symbol stack is DOLLAR
-  if (!(symbolStackTop == 0 && symbolStack[symbolStackTop]->var.t == DOLLAR &&
-        a->type == DOLLAR)) {
+  if (!(symbolStackTop == 0 && symbolStack[symbolStackTop]->var.t == DOLLAR)) {
     error_encountered = true;
+    printf("Syntax Error : Tokens parsed but stack not empty\n");
+  } else if (a->type != DOLLAR) {
+    error_encountered = true;
+    printf("Syntax Error : Stack empty but tokens not parsed\n");
   }
   // freeing memory used by twin buffer
   free(B);
