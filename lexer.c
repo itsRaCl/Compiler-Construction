@@ -551,6 +551,8 @@ bool handle_valid_error(tokenInfo token) {
       printf("Error: Variable Identifier %s is longer than the prescribed "
              "length of 20 characters\n",
              token->lexeme);
+      free(token->lexeme);
+      free(token);
       return false;
     }
     return true;
@@ -560,6 +562,8 @@ bool handle_valid_error(tokenInfo token) {
       printf("Error: Function Identifier %s is longer than the prescribed "
              "length of 30 characters\n",
              token->lexeme);
+      free(token->lexeme);
+      free(token);
       return false;
     }
     return true;
