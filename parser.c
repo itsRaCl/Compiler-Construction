@@ -331,8 +331,8 @@ void printParseTree(parseTree *PT, FILE *outfile) {
       } else {
         fprintf(outfile, "%-30s", getNonTerminal(PT->ele.symbol.var.nt));
       }
-      if ((PT->ele.symbol.var.t == TK_RNUM) ||
-          (PT->ele.symbol.var.t == TK_NUM)) {
+      if ((PT->ele.symbol.terminal) && ((PT->ele.symbol.var.t == TK_RNUM) ||
+                                        (PT->ele.symbol.var.t == TK_NUM))) {
         fprintf(outfile, "%-30s", PT->ele.lexeme);
       } else {
         fprintf(outfile, "%-30s", "----");
