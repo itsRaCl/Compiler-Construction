@@ -317,10 +317,10 @@ void printParseTree(parseTree *PT, FILE *outfile) {
   if (PT == NULL) {
     return;
   }
-  static int flag = 1;
+  static int flag = 1; // flag to print column headers only once
   if (flag) {
     flag = 0;
-    // print this -> "lexeme CurrentNodeLineno tokenName valueIfNumber parentNodeSymbol isLeafNode(yes/no) NodeSymbol"
+    // print the column headers
     fprintf(outfile, "%-30s%-30s%-30s%-30s%-30s%-30s%-30s\n\n", "lexeme",
             "lineno", "token", "valueIfNumber", "parentNodeSymbol",
             "isLeafNode(yes/no)", "NodeSymbol");
