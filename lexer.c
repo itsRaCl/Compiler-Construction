@@ -475,7 +475,7 @@ void handle_comments(twinBuffer B, FILE *fp) {
 }
 
 void handle_invalid_error(STATE_INFO state, twinBuffer B, int start, int end) {
-  printf("Line no. %d ", B->line);
+  printf("Line %02d: Lexical Error: ", B->line);
   printf("Error: ");
   if (start == end) {
     printf("Unknown symbol <");
@@ -547,7 +547,7 @@ void handle_invalid_error(STATE_INFO state, twinBuffer B, int start, int end) {
 bool handle_valid_error(tokenInfo token) {
   if (token->type == TK_ID) {
     if (token->lexemeSize > 20) {
-      printf("Line no. %d ", token->line);
+      printf("Line %02d: Lexical Error: ", token->line);
       printf("Error: Variable Identifier %s is longer than the prescribed "
              "length of 20 characters\n",
              token->lexeme);
@@ -558,7 +558,7 @@ bool handle_valid_error(tokenInfo token) {
     return true;
   } else if (token->type == TK_FUNID) {
     if (token->lexemeSize > 30) {
-      printf("Line no. %d ", token->line);
+      printf("Line %02d: Lexical Error: ", token->line);
       printf("Error: Function Identifier %s is longer than the prescribed "
              "length of 30 characters\n",
              token->lexeme);

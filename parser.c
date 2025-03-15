@@ -47,6 +47,7 @@ parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G, FILE *fp) {
   int treeNodeStackTop = 0;
   int lookAheadPointer = 0;
   int oldLineNo = -1;
+  bool error_encountered = false;
 
   parseTree *root = malloc(sizeof(parseTree));
   root->ele.symbol.terminal = false;
@@ -91,18 +92,22 @@ parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G, FILE *fp) {
         symbolStackTop--;
         treeNodeStackTop--;
         lookAheadPointer++;
+        free(a);
         a = nextToken(B, fp);
       } else {
+        error_encountered = true;
         if (oldLineNo == a->line) {
           lookAheadPointer++;
+          free(a);
           a = nextToken(B, fp);
           continue;
         } else {
           oldLineNo = a->line;
-          printf("Line %d: Syntax Error. The token %s for lexeme %s does not "
-                 "match with the expected token %s\n",
-                 a->line, getTokenName(a->type), a->lexeme,
-                 getTokenName(X->var.t));
+          printf(
+              "Line %02d: Syntax Error : The token %s for lexeme %s does not "
+              "match with the expected token %s\n",
+              a->line, getTokenName(a->type), a->lexeme,
+              getTokenName(X->var.t));
           free(X);
           symbolStack[symbolStackTop] = NULL;
           symbolStackTop--;
@@ -112,27 +117,33 @@ parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G, FILE *fp) {
     } else {
       NON_TERMINAL nt = X->var.nt;
       int rule_no = T.table[nt][a->type];
+      // if entry of parse table is -1 (ERROR)
       if (rule_no == -1) {
+        error_encountered = true;
         if (oldLineNo == a->line) {
           lookAheadPointer++;
+          free(a);
           a = nextToken(B, fp);
           continue;
         } else {
           oldLineNo = a->line;
-          printf("Line %d: Syntax Error. Invalid token %s encountered with "
+          printf("Line %02d: Syntax Error : Invalid token %s encountered with "
                  "value %s stack top %s\n",
                  a->line, getTokenName(a->type), a->lexeme, getNonTerminal(nt));
           lookAheadPointer++;
+          free(a);
           a = nextToken(B, fp);
         }
-      } else if (rule_no == -2) {
+      } else if (rule_no == -2) { // if entry of prase table is -2 (SYN)
+        error_encountered = true;
         if (oldLineNo == a->line) {
           lookAheadPointer++;
+          free(a);
           a = nextToken(B, fp);
           continue;
         } else {
           oldLineNo = a->line;
-          printf("Line %d: Syntax Error. Invalid token %s encountered with "
+          printf("Line %02d: Syntax Error : Invalid token %s encountered with "
                  "value %s stack top %s\n",
                  a->line, getTokenName(a->type), a->lexeme, getNonTerminal(nt));
           free(X);
@@ -194,12 +205,17 @@ parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G, FILE *fp) {
     }
   }
   free(B);
+  if (!error_encountered)
+    printf("COMPILATION SUCCESS!\n");
+  else
+    printf("COMPILATION FAILED\n");
   while (symbolStackTop >= 0) {
     if (symbolStack[symbolStackTop] != NULL) {
       free(symbolStack[symbolStackTop]);
     }
     symbolStackTop--;
   }
+
   return root;
 }
 
@@ -212,29 +228,29 @@ void printParseTree(parseTree *PT, FILE *outfile) {
   }
   if (outfile != NULL) {
     if (PT != NULL) {
-      fprintf(outfile, "%-25s",
+      fprintf(outfile, "%-30s",
               (PT->ele.lexeme != NULL) ? PT->ele.lexeme : "----");
-      fprintf(outfile, "%-25d", PT->ele.line);
+      fprintf(outfile, "%-30d", PT->ele.line);
 
       if (PT->ele.symbol.terminal) {
-        fprintf(outfile, "%-25s", getTokenName(PT->ele.symbol.var.t));
+        fprintf(outfile, "%-30s", getTokenName(PT->ele.symbol.var.t));
       } else {
-        fprintf(outfile, "%-25s", getNonTerminal(PT->ele.symbol.var.nt));
+        fprintf(outfile, "%-30s", getNonTerminal(PT->ele.symbol.var.nt));
       }
       if ((PT->ele.symbol.var.t == TK_RNUM) ||
           (PT->ele.symbol.var.t == TK_NUM)) {
-        fprintf(outfile, "%-25s", PT->ele.lexeme);
+        fprintf(outfile, "%-30s", PT->ele.lexeme);
       } else {
-        fprintf(outfile, "%-25s", "----");
+        fprintf(outfile, "%-30s", "----");
       }
       if (PT->parent != NULL) {
-        fprintf(outfile, "%-25s",
+        fprintf(outfile, "%-30s",
                 getNonTerminal(PT->parent->ele.symbol.var.nt));
-        fprintf(outfile, "%-25s", (PT->no_of_children == 0) ? "YES" : "NO");
-        fprintf(outfile, "%-25s", getTokenName(PT->ele.symbol.var.t));
+        fprintf(outfile, "%-30s", (PT->no_of_children == 0) ? "YES" : "NO");
+        fprintf(outfile, "%-30s", getTokenName(PT->ele.symbol.var.t));
         fprintf(outfile, "\n");
       } else {
-        fprintf(outfile, "%-25s%-25s%-25s\n", "----", "----", "----");
+        fprintf(outfile, "%-30s%-30s%-30s\n", "----", "----", "----");
       }
     }
     for (int i = 1; i < PT->no_of_children; i++) {
@@ -245,57 +261,57 @@ void printParseTree(parseTree *PT, FILE *outfile) {
   }
 }
 
-/*int main() {*/
-/*FILE *fp = fopen("Lexer_Test/t7.txt", "r");*/
-/*if (fp == NULL) {*/
-/*printf("Error: Unable to open testcase file\n");*/
-/*return 1;*/
-/*}*/
-/*[>vector *input = getAllTokens(fp);<]*/
-/*[>if (input == NULL) {<]*/
-/*[>printf("Error: Token extraction failed\n");<]*/
-/*[>fclose(fp);<]*/
-/*[>return 1;<]*/
-/*[>}<]*/
+int main() {
+  FILE *fp = fopen("Lexer_Test/testcase9.txt", "r");
+  if (fp == NULL) {
+    printf("Error: Unable to open testcase file\n");
+    return 1;
+  }
+  /*vector *input = getAllTokens(fp);*/
+  /*if (input == NULL) {*/
+  /*printf("Error: Token extraction failed\n");*/
+  /*fclose(fp);*/
+  /*return 1;*/
+  /*}*/
 
-/*[>// add dollar at the end of input<]*/
-/*[>tokenInfo dollarToken;<]*/
-/*[>dollarToken = (tokenInfo)malloc(sizeof(TOKEN));<]*/
-/*[>dollarToken->type = DOLLAR;<]*/
-/*[>push(input, dollarToken);<]*/
+  /*// add dollar at the end of input*/
+  /*tokenInfo dollarToken;*/
+  /*dollarToken = (tokenInfo)malloc(sizeof(TOKEN));*/
+  /*dollarToken->type = DOLLAR;*/
+  /*push(input, dollarToken);*/
 
-/*table T;*/
+  table T;
 
-/*grammar G = initializeGrammar();*/
-/*FirstFollow F = computeFirstFollowSet(G);*/
-/*createParseTable(F, &T);*/
+  grammar G = initializeGrammar();
+  FirstFollow F = computeFirstFollowSet(G);
+  createParseTable(F, &T);
 
-/*// printf("%d\n",T.table[27][22]);*/
+  // printf("%d\n",T.table[27][22]);
 
-/*// grammar_rule rule = G.rules[27][T.table[27][22]];*/
-/*// for(int i=0;i<rule.element_count;i++){*/
-/*//   printf("%d ",rule.elements[i].var);*/
-/*// }*/
-/*parseTree *root = parseInputSourceCode(T, F, G, fp);*/
-/*if (root == NULL) {*/
-/*printf("Error: Parsing failed\n");*/
-/*fclose(fp);*/
-/*return 1;*/
-/*}*/
-/*fclose(fp);*/
-/*// printf("here");*/
-/*FILE *outfile = fopen("parse.txt", "w");*/
-/*if (outfile == NULL) {*/
-/*printf("Error: Unable to open file\n");*/
-/*return 1;*/
-/*}*/
-/*if (root == NULL) {*/
-/*printf("Error: Parsing failed. Cannot print parse tree.\n");*/
-/*fclose(outfile);*/
-/*return 1;*/
-/*}*/
-/*printParseTree(root, outfile);*/
+  // grammar_rule rule = G.rules[27][T.table[27][22]];
+  // for(int i=0;i<rule.element_count;i++){
+  //   printf("%d ",rule.elements[i].var);
+  // }
+  parseTree *root = parseInputSourceCode(T, F, G, fp);
+  if (root == NULL) {
+    printf("Error: Parsing failed\n");
+    fclose(fp);
+    return 1;
+  }
+  fclose(fp);
+  // printf("here");
+  FILE *outfile = fopen("parse.txt", "w");
+  if (outfile == NULL) {
+    printf("Error: Unable to open file\n");
+    return 1;
+  }
+  if (root == NULL) {
+    printf("Error: Parsing failed. Cannot print parse tree.\n");
+    fclose(outfile);
+    return 1;
+  }
+  printParseTree(root, outfile);
 
-/*fclose(outfile);*/
-/*return 0;*/
-/*}*/
+  fclose(outfile);
+  return 0;
+}
