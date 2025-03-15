@@ -15,6 +15,9 @@
 
 static trie keywordsLookupTable;
 
+// DFA state transition logic function
+// INPUT: Present State, Read Symbol
+// OUTPUT: {Next State, isReturningToken, Token Type, Redaction (if applicable), Error Type}
 STATE_INFO getNextState(STATE currentState, char nextSymbol) {
   switch (currentState) {
   case START: {
@@ -275,11 +278,13 @@ STATE_INFO getNextState(STATE currentState, char nextSymbol) {
     }
   }
   default: {
+    // If no match
     return (STATE_INFO){INVALID, false, NULL_TOKEN, 0};
   }
   }
 }
 
+// Trie as lookup table for keywords
 void initializeLookupTable() {
   keywordsLookupTable = createTrieNode();
   insert(keywordsLookupTable, "as", TK_AS);
@@ -311,6 +316,7 @@ void initializeLookupTable() {
   insert(keywordsLookupTable, "write", TK_WRITE);
 }
 
+// Function to print token types from enum
 char *getTokenName(TOKEN_TYPE type) {
   switch (type) {
   case TK_ASSIGNOP:
@@ -434,7 +440,9 @@ char *getTokenName(TOKEN_TYPE type) {
   }
 }
 
+// Function to populate twin buffer by reading from file based on primary buffer
 void populate_buffer(twinBuffer B, FILE *fp) {
+  // If primary buffer is second half
   if (B->index >= BUFFER_SIZE) {
     for (int i = 0; i < BUFFER_SIZE; i++) {
       char ch = fgetc(fp);
@@ -447,6 +455,7 @@ void populate_buffer(twinBuffer B, FILE *fp) {
       }
     }
   } else {
+  // If primary buffer is first half
     for (int i = BUFFER_SIZE; i < 2 * BUFFER_SIZE; i++) {
       char ch = fgetc(fp);
       if (ch == EOF) {
@@ -460,6 +469,7 @@ void populate_buffer(twinBuffer B, FILE *fp) {
   }
 }
 
+// Function to handle comments by iterating over buffer until '\n' or '\0' is encountered
 void handle_comments(twinBuffer B, FILE *fp) {
   int before = B->index;
   while (B->buffer[B->index] != '\n' && B->buffer[B->index] != '\0') {
@@ -482,6 +492,7 @@ void handle_comments(twinBuffer B, FILE *fp) {
   return;
 }
 
+// Function to handle invalid errors and print expected pattern based on DFA
 void handle_invalid_error(STATE_INFO state, twinBuffer B, int start, int end) {
   printf("Line %02d: Lexical Error: ", B->line);
   printf("Error: ");
@@ -552,6 +563,7 @@ void handle_invalid_error(STATE_INFO state, twinBuffer B, int start, int end) {
   }
 }
 
+// Handle valid errors based on identifier length
 bool handle_valid_error(tokenInfo token) {
   if (token->type == TK_ID) {
     if (token->lexemeSize > 20) {
@@ -579,8 +591,10 @@ bool handle_valid_error(tokenInfo token) {
   return true;
 }
 
+// Function to get next token
 tokenInfo getNextToken(twinBuffer B, FILE *fp) {
   STATE currentState = START;
+  // If comment
   if (B->buffer[B->index] == '%') {
     handle_comments(B, fp);
     char *lexeme = (char *)malloc(sizeof(char) * 2);
@@ -601,15 +615,18 @@ tokenInfo getNextToken(twinBuffer B, FILE *fp) {
     end = end % (2 * BUFFER_SIZE);
     nextState = getNextState(nextState.nextSTATE, B->buffer[end]);
   }
+  // If invalid state
   if (nextState.nextSTATE == INVALID) {
     handle_invalid_error(nextState, B, start, end);
     return NULL;
   } else if (nextState.tokenType == BLANK) {
+    // If blank
     end++;
     end = end % (2 * BUFFER_SIZE);
     B->index = end;
     return NULL;
   } else if (nextState.nextSTATE == NEWLINE) {
+    // If newline
     end++;
     end = end % (2 * BUFFER_SIZE);
     B->index = end;
@@ -640,9 +657,11 @@ tokenInfo getNextToken(twinBuffer B, FILE *fp) {
     token->lexeme = lexeme;
     token->lexemeSize = size;
     token->line = B->line;
+    // Keyword search
     if (nextState.tokenType == TK_FIELDID) {
       token->type = search(keywordsLookupTable, lexeme);
     } else if (nextState.tokenType == TK_FUNID) {
+      // Function Identifier
       if (stringcmp(lexeme, "_main")) {
         token->type = TK_MAIN;
       } else {
@@ -656,6 +675,7 @@ tokenInfo getNextToken(twinBuffer B, FILE *fp) {
   }
 }
 
+// Function to print buffer (Debugging purpose)
 void printbuffer(twinBuffer B) {
   for (int i = 0; i < 2 * BUFFER_SIZE; i++) {
     printf("%c ", B->buffer[i]);
@@ -663,6 +683,7 @@ void printbuffer(twinBuffer B) {
   printf("\n");
 }
 
+// Function to get next token as per request from Parser
 tokenInfo nextToken(twinBuffer B, FILE *fp) {
   int before = B->index;
   tokenInfo token = getNextToken(B, fp);
@@ -706,11 +727,13 @@ tokenInfo nextToken(twinBuffer B, FILE *fp) {
   }
 }
 
+// Function to get stream of tokens and print it to console
 void getStream(FILE *fp) {
   twinBuffer B = (twinBuffer)malloc(sizeof(TWIN_BUFFER));
   for (int i = 0; i < 2 * BUFFER_SIZE; i++) {
     B->buffer[i] = '\0';
   }
+  // Fill buffer initially
   B->index = 2 * BUFFER_SIZE - 1;
   B->line = 1;
   populate_buffer(B, fp);
@@ -743,6 +766,7 @@ void getStream(FILE *fp) {
   free(B);
 }
 
+// Function to remove comments
 void removeComments(char *testcaseFile) {
   FILE *testcaseFPTR = fopen(testcaseFile, "r");
 
