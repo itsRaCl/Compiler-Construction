@@ -261,57 +261,57 @@ void printParseTree(parseTree *PT, FILE *outfile) {
   }
 }
 
-int main() {
-  FILE *fp = fopen("Lexer_Test/testcase9.txt", "r");
-  if (fp == NULL) {
-    printf("Error: Unable to open testcase file\n");
-    return 1;
-  }
-  /*vector *input = getAllTokens(fp);*/
-  /*if (input == NULL) {*/
-  /*printf("Error: Token extraction failed\n");*/
-  /*fclose(fp);*/
-  /*return 1;*/
-  /*}*/
+/*int main() {*/
+/*FILE *fp = fopen("Lexer_Test/testcase9.txt", "r");*/
+/*if (fp == NULL) {*/
+/*printf("Error: Unable to open testcase file\n");*/
+/*return 1;*/
+/*}*/
+/*[>vector *input = getAllTokens(fp);<]*/
+/*[>if (input == NULL) {<]*/
+/*[>printf("Error: Token extraction failed\n");<]*/
+/*[>fclose(fp);<]*/
+/*[>return 1;<]*/
+/*[>}<]*/
 
-  /*// add dollar at the end of input*/
-  /*tokenInfo dollarToken;*/
-  /*dollarToken = (tokenInfo)malloc(sizeof(TOKEN));*/
-  /*dollarToken->type = DOLLAR;*/
-  /*push(input, dollarToken);*/
+/*[>// add dollar at the end of input<]*/
+/*[>tokenInfo dollarToken;<]*/
+/*[>dollarToken = (tokenInfo)malloc(sizeof(TOKEN));<]*/
+/*[>dollarToken->type = DOLLAR;<]*/
+/*[>push(input, dollarToken);<]*/
 
-  table T;
+/*table T;*/
 
-  grammar G = initializeGrammar();
-  FirstFollow F = computeFirstFollowSet(G);
-  createParseTable(F, &T);
+/*grammar G = initializeGrammar();*/
+/*FirstFollow F = computeFirstFollowSet(G);*/
+/*createParseTable(F, &T);*/
 
-  // printf("%d\n",T.table[27][22]);
+/*// printf("%d\n",T.table[27][22]);*/
 
-  // grammar_rule rule = G.rules[27][T.table[27][22]];
-  // for(int i=0;i<rule.element_count;i++){
-  //   printf("%d ",rule.elements[i].var);
-  // }
-  parseTree *root = parseInputSourceCode(T, F, G, fp);
-  if (root == NULL) {
-    printf("Error: Parsing failed\n");
-    fclose(fp);
-    return 1;
-  }
-  fclose(fp);
-  // printf("here");
-  FILE *outfile = fopen("parse.txt", "w");
-  if (outfile == NULL) {
-    printf("Error: Unable to open file\n");
-    return 1;
-  }
-  if (root == NULL) {
-    printf("Error: Parsing failed. Cannot print parse tree.\n");
-    fclose(outfile);
-    return 1;
-  }
-  printParseTree(root, outfile);
+/*// grammar_rule rule = G.rules[27][T.table[27][22]];*/
+/*// for(int i=0;i<rule.element_count;i++){*/
+/*//   printf("%d ",rule.elements[i].var);*/
+/*// }*/
+/*parseTree *root = parseInputSourceCode(T, F, G, fp);*/
+/*if (root == NULL) {*/
+/*printf("Error: Parsing failed\n");*/
+/*fclose(fp);*/
+/*return 1;*/
+/*}*/
+/*fclose(fp);*/
+/*// printf("here");*/
+/*FILE *outfile = fopen("parse.txt", "w");*/
+/*if (outfile == NULL) {*/
+/*printf("Error: Unable to open file\n");*/
+/*return 1;*/
+/*}*/
+/*if (root == NULL) {*/
+/*printf("Error: Parsing failed. Cannot print parse tree.\n");*/
+/*fclose(outfile);*/
+/*return 1;*/
+/*}*/
+/*printParseTree(root, outfile);*/
 
-  fclose(outfile);
-  return 0;
-}
+/*fclose(outfile);*/
+/*return 0;*/
+/*}*/
