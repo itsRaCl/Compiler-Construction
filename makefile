@@ -1,5 +1,5 @@
-exec: lexer.o trie.o string.o vector.o utils.o parser.o driver.o
-	gcc -o exec driver.o lexer.o parser.o string.o trie.o utils.o vector.o
+exec: lexer.o trie.o string.o utils.o parser.o driver.o
+	gcc -o exec driver.o lexer.o parser.o string.o trie.o utils.o
 lexer.o: lexer.c lexer.h lexerDef.h
 	gcc -c lexer.c
 
@@ -8,9 +8,6 @@ trie.o: trie.c trie.h
 
 string.o: string.c string.h
 	gcc -c string.c
-
-vector.o: vector.c vector.h
-	gcc -c vector.c
 
 utils.o: utils.c utils.h
 	gcc -c utils.c
@@ -21,14 +18,14 @@ parser.o: parser.c parserDef.h
 driver.o: driver.c
 	gcc -c driver.c
 
-run_parser: lexer.o trie.o string.o vector.o parser.o utils.o
-	gcc -o run_parser lexer.o trie.o string.o vector.o parser.o utils.o
+run_parser: lexer.o trie.o string.o parser.o utils.o
+	gcc -o run_parser lexer.o trie.o string.o parser.o utils.o
 
 run: run_parser
 	./run_parser
 
-run_lexer: lexer.o trie.o string.o vector.o 
-	gcc -o run_lexer lexer.o trie.o string.o vector.o
+run_lexer: lexer.o trie.o string.o
+	gcc -o run_lexer lexer.o trie.o string.o
 	./run_lexer
 
 clean:
