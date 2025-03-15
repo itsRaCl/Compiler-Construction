@@ -1,0 +1,288 @@
+_loopConditionDemo       1                        TK_FUNID                 ----                     NT_FUNCTION              YES                      TK_FUNID                 
+----                     -1                       NT_FUNCTION              ----                     NT_OTHERFUNCTIONS        NO                       TK_ID                    
+input                    2                        TK_INPUT                 ----                     NT_INPUT_PAR             YES                      TK_INPUT                 
+----                     -1                       NT_INPUT_PAR             (null)                   NT_FUNCTION              NO                       TK_NUM                   
+parameter                2                        TK_PARAMETER             ----                     NT_INPUT_PAR             YES                      TK_PARAMETER             
+list                     2                        TK_LIST                  ----                     NT_INPUT_PAR             YES                      TK_LIST                  
+[                        2                        TK_SQL                   ----                     NT_INPUT_PAR             YES                      TK_SQL                   
+int                      2                        TK_INT                   ----                     NT_PRIMITIVEDATATYPE     YES                      TK_INT                   
+----                     -1                       NT_PRIMITIVEDATATYPE     ----                     NT_DATATYPE              NO                       TK_WITH                  
+----                     -1                       NT_DATATYPE              ----                     NT_PARAMETER_LIST        NO                       TK_RUID                  
+----                     -1                       NT_PARAMETER_LIST        ----                     NT_INPUT_PAR             NO                       TK_FUNID                 
+c2                       2                        TK_ID                    ----                     NT_PARAMETER_LIST        YES                      TK_ID                    
+----                     -1                       EPSILLON                 ----                     NT_REMAINING_LIST        YES                      EPSILLON                 
+----                     -1                       NT_REMAINING_LIST        ----                     NT_PARAMETER_LIST        NO                       TK_END                   
+]                        2                        TK_SQR                   ----                     NT_INPUT_PAR             YES                      TK_SQR                   
+output                   3                        TK_OUTPUT                ----                     NT_OUTPUT_PAR            YES                      TK_OUTPUT                
+----                     -1                       NT_OUTPUT_PAR            (null)                   NT_FUNCTION              NO                       TK_RNUM                  
+parameter                3                        TK_PARAMETER             ----                     NT_OUTPUT_PAR            YES                      TK_PARAMETER             
+list                     3                        TK_LIST                  ----                     NT_OUTPUT_PAR            YES                      TK_LIST                  
+[                        3                        TK_SQL                   ----                     NT_OUTPUT_PAR            YES                      TK_SQL                   
+int                      3                        TK_INT                   ----                     NT_PRIMITIVEDATATYPE     YES                      TK_INT                   
+----                     -1                       NT_PRIMITIVEDATATYPE     ----                     NT_DATATYPE              NO                       TK_WITH                  
+----                     -1                       NT_DATATYPE              ----                     NT_PARAMETER_LIST        NO                       TK_RUID                  
+----                     -1                       NT_PARAMETER_LIST        ----                     NT_OUTPUT_PAR            NO                       TK_FUNID                 
+d3                       3                        TK_ID                    ----                     NT_PARAMETER_LIST        YES                      TK_ID                    
+----                     -1                       EPSILLON                 ----                     NT_REMAINING_LIST        YES                      EPSILLON                 
+----                     -1                       NT_REMAINING_LIST        ----                     NT_PARAMETER_LIST        NO                       TK_END                   
+]                        3                        TK_SQR                   ----                     NT_OUTPUT_PAR            YES                      TK_SQR                   
+;                        3                        TK_SEM                   ----                     NT_FUNCTION              YES                      TK_SEM                   
+----                     -1                       EPSILLON                 ----                     NT_TYPEDEFINITIONS       YES                      EPSILLON                 
+----                     -1                       NT_TYPEDEFINITIONS       ----                     NT_STMTS                 NO                       TK_UNION                 
+----                     -1                       NT_STMTS                 ----                     NT_FUNCTION              NO                       TK_WHILE                 
+type                     4                        TK_TYPE                  ----                     NT_DECLATRATION          YES                      TK_TYPE                  
+----                     -1                       NT_DECLATRATION          ----                     NT_DECLATRATIONS         NO                       TK_LIST                  
+int                      4                        TK_INT                   ----                     NT_PRIMITIVEDATATYPE     YES                      TK_INT                   
+----                     -1                       NT_PRIMITIVEDATATYPE     ----                     NT_DATATYPE              NO                       TK_WITH                  
+----                     -1                       NT_DATATYPE              ----                     NT_DECLATRATION          NO                       TK_RUID                  
+:                        4                        TK_COLON                 ----                     NT_DECLATRATION          YES                      TK_COLON                 
+b2                       4                        TK_ID                    ----                     NT_DECLATRATION          YES                      TK_ID                    
+----                     -1                       EPSILLON                 ----                     NT_GLOBAL_OR_NOT         YES                      EPSILLON                 
+----                     -1                       NT_GLOBAL_OR_NOT         ----                     NT_DECLATRATION          NO                       TK_SQL                   
+;                        4                        TK_SEM                   ----                     NT_DECLATRATION          YES                      TK_SEM                   
+----                     -1                       NT_DECLATRATIONS         ----                     NT_STMTS                 NO                       TK_PARAMETER             
+----                     -1                       EPSILLON                 ----                     NT_DECLATRATIONS         YES                      EPSILLON                 
+----                     -1                       NT_DECLATRATIONS         ----                     NT_DECLATRATIONS         NO                       TK_PARAMETER             
+b2                       5                        TK_ID                    ----                     NT_SINGLEORRECID         YES                      TK_ID                    
+----                     -1                       NT_SINGLEORRECID         ----                     NT_ASSIGNMENTSTMT        NO                       TK_INT                   
+----                     -1                       EPSILLON                 ----                     NT_OPTION_SINGLE_CONSTRUCTEDYES                      EPSILLON                 
+----                     -1                       NT_OPTION_SINGLE_CONSTRUCTED----                     NT_SINGLEORRECID         NO                       TK_REAL                  
+----                     -1                       NT_ASSIGNMENTSTMT        ----                     NT_STMT                  NO                       TK_OUTPUT                
+<---                     5                        TK_ASSIGNOP              ----                     NT_ASSIGNMENTSTMT        YES                      TK_ASSIGNOP              
+c2                       5                        TK_ID                    ----                     NT_SINGLEORRECID         YES                      TK_ID                    
+----                     -1                       NT_SINGLEORRECID         ----                     NT_VAR                   NO                       TK_INT                   
+----                     -1                       EPSILLON                 ----                     NT_OPTION_SINGLE_CONSTRUCTEDYES                      EPSILLON                 
+----                     -1                       NT_OPTION_SINGLE_CONSTRUCTED----                     NT_SINGLEORRECID         NO                       TK_REAL                  
+----                     -1                       NT_VAR                   ----                     NT_FACTOR                NO                       TK_CALL                  
+----                     -1                       NT_FACTOR                ----                     NT_TERM                  NO                       TK_PLUS                  
+----                     -1                       NT_TERM                  ----                     NT_ARITHMETICEXPRESSION  NO                       TK_WRITE                 
+----                     -1                       EPSILLON                 ----                     NT_TERMPRIME             YES                      EPSILLON                 
+----                     -1                       NT_TERMPRIME             ----                     NT_TERM                  NO                       TK_RETURN                
+----                     -1                       NT_ARITHMETICEXPRESSION  ----                     NT_ASSIGNMENTSTMT        NO                       TK_ENDIF                 
+----                     -1                       EPSILLON                 ----                     NT_EXPPRIME              YES                      EPSILLON                 
+----                     -1                       NT_EXPPRIME              ----                     NT_ARITHMETICEXPRESSION  NO                       TK_READ                  
+;                        5                        TK_SEM                   ----                     NT_ASSIGNMENTSTMT        YES                      TK_SEM                   
+----                     -1                       NT_STMT                  ----                     NT_OTHERSTMTS            NO                       TK_INPUT                 
+----                     -1                       NT_OTHERSTMTS            ----                     NT_STMTS                 NO                       TK_SQR                   
+while                    6                        TK_WHILE                 ----                     NT_ITERATIVESTMT         YES                      TK_WHILE                 
+----                     -1                       NT_ITERATIVESTMT         ----                     NT_STMT                  NO                       TK_OP                    
+(                        6                        TK_OP                    ----                     NT_ITERATIVESTMT         YES                      TK_OP                    
+b2                       6                        TK_ID                    ----                     NT_SINGLEORRECID         YES                      TK_ID                    
+----                     -1                       NT_SINGLEORRECID         ----                     NT_VAR                   NO                       TK_INT                   
+----                     -1                       EPSILLON                 ----                     NT_OPTION_SINGLE_CONSTRUCTEDYES                      EPSILLON                 
+----                     -1                       NT_OPTION_SINGLE_CONSTRUCTED----                     NT_SINGLEORRECID         NO                       TK_REAL                  
+----                     -1                       NT_VAR                   ----                     NT_BOOLEANEXPRESSION     NO                       TK_CALL                  
+----                     -1                       NT_BOOLEANEXPRESSION     ----                     NT_ITERATIVESTMT         NO                       TK_DIV                   
+<=                       6                        TK_LE                    ----                     NT_RELATIONALOP          YES                      TK_LE                    
+----                     -1                       NT_RELATIONALOP          ----                     NT_BOOLEANEXPRESSION     NO                       TK_ENDRECORD             
+c2                       6                        TK_ID                    ----                     NT_SINGLEORRECID         YES                      TK_ID                    
+----                     -1                       NT_SINGLEORRECID         ----                     NT_VAR                   NO                       TK_INT                   
+----                     -1                       EPSILLON                 ----                     NT_OPTION_SINGLE_CONSTRUCTEDYES                      EPSILLON                 
+----                     -1                       NT_OPTION_SINGLE_CONSTRUCTED----                     NT_SINGLEORRECID         NO                       TK_REAL                  
+----                     -1                       NT_VAR                   ----                     NT_BOOLEANEXPRESSION     NO                       TK_CALL                  
+)                        6                        TK_CL                    ----                     NT_ITERATIVESTMT         YES                      TK_CL                    
+if                       7                        TK_IF                    ----                     NT_CONDITIONALSTMT       YES                      TK_IF                    
+----                     -1                       NT_CONDITIONALSTMT       ----                     NT_STMT                  NO                       TK_CL                    
+(                        7                        TK_OP                    ----                     NT_CONDITIONALSTMT       YES                      TK_OP                    
+b2                       7                        TK_ID                    ----                     NT_SINGLEORRECID         YES                      TK_ID                    
+----                     -1                       NT_SINGLEORRECID         ----                     NT_VAR                   NO                       TK_INT                   
+----                     -1                       EPSILLON                 ----                     NT_OPTION_SINGLE_CONSTRUCTEDYES                      EPSILLON                 
+----                     -1                       NT_OPTION_SINGLE_CONSTRUCTED----                     NT_SINGLEORRECID         NO                       TK_REAL                  
+----                     -1                       NT_VAR                   ----                     NT_BOOLEANEXPRESSION     NO                       TK_CALL                  
+----                     -1                       NT_BOOLEANEXPRESSION     ----                     NT_CONDITIONALSTMT       NO                       TK_DIV                   
+==                       7                        TK_EQ                    ----                     NT_RELATIONALOP          YES                      TK_EQ                    
+----                     -1                       NT_RELATIONALOP          ----                     NT_BOOLEANEXPRESSION     NO                       TK_ENDRECORD             
+c2                       7                        TK_ID                    ----                     NT_SINGLEORRECID         YES                      TK_ID                    
+----                     -1                       NT_SINGLEORRECID         ----                     NT_VAR                   NO                       TK_INT                   
+----                     -1                       EPSILLON                 ----                     NT_OPTION_SINGLE_CONSTRUCTEDYES                      EPSILLON                 
+----                     -1                       NT_OPTION_SINGLE_CONSTRUCTED----                     NT_SINGLEORRECID         NO                       TK_REAL                  
+----                     -1                       NT_VAR                   ----                     NT_BOOLEANEXPRESSION     NO                       TK_CALL                  
+)                        7                        TK_CL                    ----                     NT_CONDITIONALSTMT       YES                      TK_CL                    
+then                     8                        TK_THEN                  ----                     NT_CONDITIONALSTMT       YES                      TK_THEN                  
+write                    9                        TK_WRITE                 ----                     NT_IOSTMT                YES                      TK_WRITE                 
+----                     -1                       NT_IOSTMT                ----                     NT_STMT                  NO                       TK_THEN                  
+(                        9                        TK_OP                    ----                     NT_IOSTMT                YES                      TK_OP                    
+b2                       9                        TK_ID                    ----                     NT_SINGLEORRECID         YES                      TK_ID                    
+----                     -1                       NT_SINGLEORRECID         ----                     NT_VAR                   NO                       TK_INT                   
+----                     -1                       EPSILLON                 ----                     NT_OPTION_SINGLE_CONSTRUCTEDYES                      EPSILLON                 
+----                     -1                       NT_OPTION_SINGLE_CONSTRUCTED----                     NT_SINGLEORRECID         NO                       TK_REAL                  
+----                     -1                       NT_VAR                   ----                     NT_IOSTMT                NO                       TK_CALL                  
+)                        9                        TK_CL                    ----                     NT_IOSTMT                YES                      TK_CL                    
+;                        9                        TK_SEM                   ----                     NT_IOSTMT                YES                      TK_SEM                   
+----                     -1                       NT_STMT                  ----                     NT_CONDITIONALSTMT       NO                       TK_INPUT                 
+----                     -1                       EPSILLON                 ----                     NT_OTHERSTMTS            YES                      EPSILLON                 
+----                     -1                       NT_OTHERSTMTS            ----                     NT_CONDITIONALSTMT       NO                       TK_SQR                   
+else                     10                       TK_ELSE                  ----                     NT_ELSEPART              YES                      TK_ELSE                  
+----                     -1                       NT_ELSEPART              ----                     NT_CONDITIONALSTMT       NO                       TK_IF                    
+write                    11                       TK_WRITE                 ----                     NT_IOSTMT                YES                      TK_WRITE                 
+----                     -1                       NT_IOSTMT                ----                     NT_STMT                  NO                       TK_THEN                  
+(                        11                       TK_OP                    ----                     NT_IOSTMT                YES                      TK_OP                    
+b2                       11                       TK_ID                    ----                     NT_SINGLEORRECID         YES                      TK_ID                    
+----                     -1                       NT_SINGLEORRECID         ----                     NT_VAR                   NO                       TK_INT                   
+----                     -1                       EPSILLON                 ----                     NT_OPTION_SINGLE_CONSTRUCTEDYES                      EPSILLON                 
+----                     -1                       NT_OPTION_SINGLE_CONSTRUCTED----                     NT_SINGLEORRECID         NO                       TK_REAL                  
+----                     -1                       NT_VAR                   ----                     NT_IOSTMT                NO                       TK_CALL                  
+)                        11                       TK_CL                    ----                     NT_IOSTMT                YES                      TK_CL                    
+;                        11                       TK_SEM                   ----                     NT_IOSTMT                YES                      TK_SEM                   
+----                     -1                       NT_STMT                  ----                     NT_ELSEPART              NO                       TK_INPUT                 
+----                     -1                       EPSILLON                 ----                     NT_OTHERSTMTS            YES                      EPSILLON                 
+----                     -1                       NT_OTHERSTMTS            ----                     NT_ELSEPART              NO                       TK_SQR                   
+endif                    12                       TK_ENDIF                 ----                     NT_ELSEPART              YES                      TK_ENDIF                 
+----                     -1                       NT_STMT                  ----                     NT_ITERATIVESTMT         NO                       TK_INPUT                 
+b2                       13                       TK_ID                    ----                     NT_SINGLEORRECID         YES                      TK_ID                    
+----                     -1                       NT_SINGLEORRECID         ----                     NT_ASSIGNMENTSTMT        NO                       TK_INT                   
+----                     -1                       EPSILLON                 ----                     NT_OPTION_SINGLE_CONSTRUCTEDYES                      EPSILLON                 
+----                     -1                       NT_OPTION_SINGLE_CONSTRUCTED----                     NT_SINGLEORRECID         NO                       TK_REAL                  
+----                     -1                       NT_ASSIGNMENTSTMT        ----                     NT_STMT                  NO                       TK_OUTPUT                
+<---                     13                       TK_ASSIGNOP              ----                     NT_ASSIGNMENTSTMT        YES                      TK_ASSIGNOP              
+b2                       13                       TK_ID                    ----                     NT_SINGLEORRECID         YES                      TK_ID                    
+----                     -1                       NT_SINGLEORRECID         ----                     NT_VAR                   NO                       TK_INT                   
+----                     -1                       EPSILLON                 ----                     NT_OPTION_SINGLE_CONSTRUCTEDYES                      EPSILLON                 
+----                     -1                       NT_OPTION_SINGLE_CONSTRUCTED----                     NT_SINGLEORRECID         NO                       TK_REAL                  
+----                     -1                       NT_VAR                   ----                     NT_FACTOR                NO                       TK_CALL                  
+----                     -1                       NT_FACTOR                ----                     NT_TERM                  NO                       TK_PLUS                  
+----                     -1                       NT_TERM                  ----                     NT_ARITHMETICEXPRESSION  NO                       TK_WRITE                 
+----                     -1                       EPSILLON                 ----                     NT_TERMPRIME             YES                      EPSILLON                 
+----                     -1                       NT_TERMPRIME             ----                     NT_TERM                  NO                       TK_RETURN                
+----                     -1                       NT_ARITHMETICEXPRESSION  ----                     NT_ASSIGNMENTSTMT        NO                       TK_ENDIF                 
++                        13                       TK_PLUS                  ----                     NT_LOWPRECEDENCEOPERATORSYES                      TK_PLUS                  
+----                     -1                       NT_LOWPRECEDENCEOPERATORS----                     NT_EXPPRIME              NO                       TK_MUL                   
+----                     -1                       NT_EXPPRIME              ----                     NT_ARITHMETICEXPRESSION  NO                       TK_READ                  
+1                        13                       TK_NUM                   1                        NT_VAR                   YES                      TK_NUM                   
+----                     -1                       NT_VAR                   ----                     NT_FACTOR                NO                       TK_CALL                  
+----                     -1                       NT_FACTOR                ----                     NT_TERM                  NO                       TK_PLUS                  
+----                     -1                       NT_TERM                  ----                     NT_EXPPRIME              NO                       TK_WRITE                 
+----                     -1                       EPSILLON                 ----                     NT_TERMPRIME             YES                      EPSILLON                 
+----                     -1                       NT_TERMPRIME             ----                     NT_TERM                  NO                       TK_RETURN                
+----                     -1                       EPSILLON                 ----                     NT_EXPPRIME              YES                      EPSILLON                 
+----                     -1                       NT_EXPPRIME              ----                     NT_EXPPRIME              NO                       TK_READ                  
+;                        13                       TK_SEM                   ----                     NT_ASSIGNMENTSTMT        YES                      TK_SEM                   
+----                     -1                       NT_STMT                  ----                     NT_OTHERSTMTS            NO                       TK_INPUT                 
+----                     -1                       NT_OTHERSTMTS            ----                     NT_ITERATIVESTMT         NO                       TK_SQR                   
+----                     -1                       EPSILLON                 ----                     NT_OTHERSTMTS            YES                      EPSILLON                 
+----                     -1                       NT_OTHERSTMTS            ----                     NT_OTHERSTMTS            NO                       TK_SQR                   
+endwhile                 14                       TK_ENDWHILE              ----                     NT_ITERATIVESTMT         YES                      TK_ENDWHILE              
+----                     -1                       NT_STMT                  ----                     NT_OTHERSTMTS            NO                       TK_INPUT                 
+----                     -1                       NT_OTHERSTMTS            ----                     NT_OTHERSTMTS            NO                       TK_SQR                   
+d3                       15                       TK_ID                    ----                     NT_SINGLEORRECID         YES                      TK_ID                    
+----                     -1                       NT_SINGLEORRECID         ----                     NT_ASSIGNMENTSTMT        NO                       TK_INT                   
+----                     -1                       EPSILLON                 ----                     NT_OPTION_SINGLE_CONSTRUCTEDYES                      EPSILLON                 
+----                     -1                       NT_OPTION_SINGLE_CONSTRUCTED----                     NT_SINGLEORRECID         NO                       TK_REAL                  
+----                     -1                       NT_ASSIGNMENTSTMT        ----                     NT_STMT                  NO                       TK_OUTPUT                
+<---                     15                       TK_ASSIGNOP              ----                     NT_ASSIGNMENTSTMT        YES                      TK_ASSIGNOP              
+b2                       15                       TK_ID                    ----                     NT_SINGLEORRECID         YES                      TK_ID                    
+----                     -1                       NT_SINGLEORRECID         ----                     NT_VAR                   NO                       TK_INT                   
+----                     -1                       EPSILLON                 ----                     NT_OPTION_SINGLE_CONSTRUCTEDYES                      EPSILLON                 
+----                     -1                       NT_OPTION_SINGLE_CONSTRUCTED----                     NT_SINGLEORRECID         NO                       TK_REAL                  
+----                     -1                       NT_VAR                   ----                     NT_FACTOR                NO                       TK_CALL                  
+----                     -1                       NT_FACTOR                ----                     NT_TERM                  NO                       TK_PLUS                  
+----                     -1                       NT_TERM                  ----                     NT_ARITHMETICEXPRESSION  NO                       TK_WRITE                 
+----                     -1                       EPSILLON                 ----                     NT_TERMPRIME             YES                      EPSILLON                 
+----                     -1                       NT_TERMPRIME             ----                     NT_TERM                  NO                       TK_RETURN                
+----                     -1                       NT_ARITHMETICEXPRESSION  ----                     NT_ASSIGNMENTSTMT        NO                       TK_ENDIF                 
+----                     -1                       EPSILLON                 ----                     NT_EXPPRIME              YES                      EPSILLON                 
+----                     -1                       NT_EXPPRIME              ----                     NT_ARITHMETICEXPRESSION  NO                       TK_READ                  
+;                        15                       TK_SEM                   ----                     NT_ASSIGNMENTSTMT        YES                      TK_SEM                   
+----                     -1                       NT_STMT                  ----                     NT_OTHERSTMTS            NO                       TK_INPUT                 
+----                     -1                       NT_OTHERSTMTS            ----                     NT_OTHERSTMTS            NO                       TK_SQR                   
+----                     -1                       EPSILLON                 ----                     NT_OTHERSTMTS            YES                      EPSILLON                 
+----                     -1                       NT_OTHERSTMTS            ----                     NT_OTHERSTMTS            NO                       TK_SQR                   
+return                   16                       TK_RETURN                ----                     NT_RETURNSTMT            YES                      TK_RETURN                
+----                     -1                       NT_RETURNSTMT            ----                     NT_STMTS                 NO                       TK_ELSE                  
+[                        16                       TK_SQL                   ----                     NT_OPTIONALRETURN        YES                      TK_SQL                   
+----                     -1                       NT_OPTIONALRETURN        ----                     NT_RETURNSTMT            NO                       TK_AND                   
+d3                       16                       TK_ID                    ----                     NT_IDLIST                YES                      TK_ID                    
+----                     -1                       NT_IDLIST                ----                     NT_OPTIONALRETURN        NO                       TK_OR                    
+----                     -1                       EPSILLON                 ----                     NT_MORE_IDS              YES                      EPSILLON                 
+----                     -1                       NT_MORE_IDS              ----                     NT_IDLIST                NO                       TK_NOT                   
+]                        16                       TK_SQR                   ----                     NT_OPTIONALRETURN        YES                      TK_SQR                   
+;                        16                       TK_SEM                   ----                     NT_RETURNSTMT            YES                      TK_SEM                   
+end                      17                       TK_END                   ----                     NT_FUNCTION              YES                      TK_END                   
+----                     -1                       NT_OTHERFUNCTIONS        ----                     NT_PROGRAM               NO                       TK_FIELDID               
+----                     -1                       EPSILLON                 ----                     NT_OTHERFUNCTIONS        YES                      EPSILLON                 
+----                     -1                       NT_OTHERFUNCTIONS        ----                     NT_OTHERFUNCTIONS        NO                       TK_FIELDID               
+----                     -1                       NT_PROGRAM               ----                     ----                     ----                     ----                     
+_main                    19                       TK_MAIN                  ----                     NT_MAINFUNCTION          YES                      TK_MAIN                  
+----                     -1                       NT_MAINFUNCTION          ----                     NT_PROGRAM               NO                       TK_COMMENT               
+----                     -1                       EPSILLON                 ----                     NT_TYPEDEFINITIONS       YES                      EPSILLON                 
+----                     -1                       NT_TYPEDEFINITIONS       ----                     NT_STMTS                 NO                       TK_UNION                 
+----                     -1                       NT_STMTS                 ----                     NT_MAINFUNCTION          NO                       TK_WHILE                 
+type                     20                       TK_TYPE                  ----                     NT_DECLATRATION          YES                      TK_TYPE                  
+----                     -1                       NT_DECLATRATION          ----                     NT_DECLATRATIONS         NO                       TK_LIST                  
+int                      20                       TK_INT                   ----                     NT_PRIMITIVEDATATYPE     YES                      TK_INT                   
+----                     -1                       NT_PRIMITIVEDATATYPE     ----                     NT_DATATYPE              NO                       TK_WITH                  
+----                     -1                       NT_DATATYPE              ----                     NT_DECLATRATION          NO                       TK_RUID                  
+:                        20                       TK_COLON                 ----                     NT_DECLATRATION          YES                      TK_COLON                 
+c2d3                     20                       TK_ID                    ----                     NT_DECLATRATION          YES                      TK_ID                    
+----                     -1                       EPSILLON                 ----                     NT_GLOBAL_OR_NOT         YES                      EPSILLON                 
+----                     -1                       NT_GLOBAL_OR_NOT         ----                     NT_DECLATRATION          NO                       TK_SQL                   
+;                        20                       TK_SEM                   ----                     NT_DECLATRATION          YES                      TK_SEM                   
+----                     -1                       NT_DECLATRATIONS         ----                     NT_STMTS                 NO                       TK_PARAMETER             
+type                     21                       TK_TYPE                  ----                     NT_DECLATRATION          YES                      TK_TYPE                  
+----                     -1                       NT_DECLATRATION          ----                     NT_DECLATRATIONS         NO                       TK_LIST                  
+int                      21                       TK_INT                   ----                     NT_PRIMITIVEDATATYPE     YES                      TK_INT                   
+----                     -1                       NT_PRIMITIVEDATATYPE     ----                     NT_DATATYPE              NO                       TK_WITH                  
+----                     -1                       NT_DATATYPE              ----                     NT_DECLATRATION          NO                       TK_RUID                  
+:                        21                       TK_COLON                 ----                     NT_DECLATRATION          YES                      TK_COLON                 
+d4b5                     21                       TK_ID                    ----                     NT_DECLATRATION          YES                      TK_ID                    
+----                     -1                       EPSILLON                 ----                     NT_GLOBAL_OR_NOT         YES                      EPSILLON                 
+----                     -1                       NT_GLOBAL_OR_NOT         ----                     NT_DECLATRATION          NO                       TK_SQL                   
+;                        21                       TK_SEM                   ----                     NT_DECLATRATION          YES                      TK_SEM                   
+----                     -1                       NT_DECLATRATIONS         ----                     NT_DECLATRATIONS         NO                       TK_PARAMETER             
+----                     -1                       EPSILLON                 ----                     NT_DECLATRATIONS         YES                      EPSILLON                 
+----                     -1                       NT_DECLATRATIONS         ----                     NT_DECLATRATIONS         NO                       TK_PARAMETER             
+read                     22                       TK_READ                  ----                     NT_IOSTMT                YES                      TK_READ                  
+----                     -1                       NT_IOSTMT                ----                     NT_STMT                  NO                       TK_THEN                  
+(                        22                       TK_OP                    ----                     NT_IOSTMT                YES                      TK_OP                    
+c2d3                     22                       TK_ID                    ----                     NT_SINGLEORRECID         YES                      TK_ID                    
+----                     -1                       NT_SINGLEORRECID         ----                     NT_VAR                   NO                       TK_INT                   
+----                     -1                       EPSILLON                 ----                     NT_OPTION_SINGLE_CONSTRUCTEDYES                      EPSILLON                 
+----                     -1                       NT_OPTION_SINGLE_CONSTRUCTED----                     NT_SINGLEORRECID         NO                       TK_REAL                  
+----                     -1                       NT_VAR                   ----                     NT_IOSTMT                NO                       TK_CALL                  
+)                        22                       TK_CL                    ----                     NT_IOSTMT                YES                      TK_CL                    
+;                        22                       TK_SEM                   ----                     NT_IOSTMT                YES                      TK_SEM                   
+----                     -1                       NT_STMT                  ----                     NT_OTHERSTMTS            NO                       TK_INPUT                 
+----                     -1                       NT_OTHERSTMTS            ----                     NT_STMTS                 NO                       TK_SQR                   
+[                        23                       TK_SQL                   ----                     NT_OUTPUTPARAMETERS      YES                      TK_SQL                   
+----                     -1                       NT_OUTPUTPARAMETERS      ----                     NT_FUNCALLSTMT           NO                       TK_DOT                   
+d4b5                     23                       TK_ID                    ----                     NT_IDLIST                YES                      TK_ID                    
+----                     -1                       NT_IDLIST                ----                     NT_OUTPUTPARAMETERS      NO                       TK_OR                    
+----                     -1                       EPSILLON                 ----                     NT_MORE_IDS              YES                      EPSILLON                 
+----                     -1                       NT_MORE_IDS              ----                     NT_IDLIST                NO                       TK_NOT                   
+]                        23                       TK_SQR                   ----                     NT_OUTPUTPARAMETERS      YES                      TK_SQR                   
+<---                     23                       TK_ASSIGNOP              ----                     NT_OUTPUTPARAMETERS      YES                      TK_ASSIGNOP              
+----                     -1                       NT_FUNCALLSTMT           ----                     NT_STMT                  NO                       TK_COLON                 
+call                     23                       TK_CALL                  ----                     NT_FUNCALLSTMT           YES                      TK_CALL                  
+_loopConditionDemo       23                       TK_FUNID                 ----                     NT_FUNCALLSTMT           YES                      TK_FUNID                 
+with                     23                       TK_WITH                  ----                     NT_FUNCALLSTMT           YES                      TK_WITH                  
+parameters               23                       TK_PARAMETERS            ----                     NT_FUNCALLSTMT           YES                      TK_PARAMETERS            
+[                        23                       TK_SQL                   ----                     NT_INPUTPARAMETERS       YES                      TK_SQL                   
+----                     -1                       NT_INPUTPARAMETERS       ----                     NT_FUNCALLSTMT           NO                       TK_ENDWHILE              
+c2d3                     23                       TK_ID                    ----                     NT_IDLIST                YES                      TK_ID                    
+----                     -1                       NT_IDLIST                ----                     NT_INPUTPARAMETERS       NO                       TK_OR                    
+----                     -1                       EPSILLON                 ----                     NT_MORE_IDS              YES                      EPSILLON                 
+----                     -1                       NT_MORE_IDS              ----                     NT_IDLIST                NO                       TK_NOT                   
+]                        23                       TK_SQR                   ----                     NT_INPUTPARAMETERS       YES                      TK_SQR                   
+;                        23                       TK_SEM                   ----                     NT_FUNCALLSTMT           YES                      TK_SEM                   
+----                     -1                       NT_STMT                  ----                     NT_OTHERSTMTS            NO                       TK_INPUT                 
+----                     -1                       NT_OTHERSTMTS            ----                     NT_OTHERSTMTS            NO                       TK_SQR                   
+write                    24                       TK_WRITE                 ----                     NT_IOSTMT                YES                      TK_WRITE                 
+----                     -1                       NT_IOSTMT                ----                     NT_STMT                  NO                       TK_THEN                  
+(                        24                       TK_OP                    ----                     NT_IOSTMT                YES                      TK_OP                    
+d4b5                     24                       TK_ID                    ----                     NT_SINGLEORRECID         YES                      TK_ID                    
+----                     -1                       NT_SINGLEORRECID         ----                     NT_VAR                   NO                       TK_INT                   
+----                     -1                       EPSILLON                 ----                     NT_OPTION_SINGLE_CONSTRUCTEDYES                      EPSILLON                 
+----                     -1                       NT_OPTION_SINGLE_CONSTRUCTED----                     NT_SINGLEORRECID         NO                       TK_REAL                  
+----                     -1                       NT_VAR                   ----                     NT_IOSTMT                NO                       TK_CALL                  
+)                        24                       TK_CL                    ----                     NT_IOSTMT                YES                      TK_CL                    
+;                        24                       TK_SEM                   ----                     NT_IOSTMT                YES                      TK_SEM                   
+----                     -1                       NT_STMT                  ----                     NT_OTHERSTMTS            NO                       TK_INPUT                 
+----                     -1                       NT_OTHERSTMTS            ----                     NT_OTHERSTMTS            NO                       TK_SQR                   
+----                     -1                       EPSILLON                 ----                     NT_OTHERSTMTS            YES                      EPSILLON                 
+----                     -1                       NT_OTHERSTMTS            ----                     NT_OTHERSTMTS            NO                       TK_SQR                   
+return                   25                       TK_RETURN                ----                     NT_RETURNSTMT            YES                      TK_RETURN                
+----                     -1                       NT_RETURNSTMT            ----                     NT_STMTS                 NO                       TK_ELSE                  
+----                     -1                       EPSILLON                 ----                     NT_OPTIONALRETURN        YES                      EPSILLON                 
+----                     -1                       NT_OPTIONALRETURN        ----                     NT_RETURNSTMT            NO                       TK_AND                   
+;                        25                       TK_SEM                   ----                     NT_RETURNSTMT            YES                      TK_SEM                   
+end                      26                       TK_END                   ----                     NT_MAINFUNCTION          YES                      TK_END                   

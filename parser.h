@@ -5,8 +5,7 @@
 
 void createParseTable(FirstFollow F, table *T);
 
-parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G,
-                                vector *input);
+parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G, FILE *fp);
 
 void printParseTree(parseTree *PT, FILE *outfile);
 #endif

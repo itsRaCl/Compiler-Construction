@@ -2,7 +2,7 @@
 #include "parser.h"
 #include "parserDef.h"
 #include "utils.h"
-#include <stdlib.h>
+#include <time.h>
 
 char *MAIN_MENU = "What do you want to do:\n\t0. Exit\n\t1. Remove "
                   "Comments\n\t2. Print Lexer Token List\n\t3. Parse Code and "
@@ -42,19 +42,24 @@ int main(int argc, char *argv[]) {
       printf("==== Lexer Tokens Complete ====\n\n\n");
       break;
     case 3:
-      printf("==== Parsing... ===");
+      printf("==== Parsing... ====\n");
       FILE *inputFile = fopen(argv[1], "r");
       FILE *outputFile = fopen(argv[2], "r");
-      Vector lexerTokens = getAllTokens(inputFile);
-      tokenInfo dollarToken;
-      dollarToken = (tokenInfo)malloc(sizeof(TOKEN));
-      dollarToken->type = DOLLAR;
-      push(lexerTokens, dollarToken);
-      parseTree *root = parseInputSourceCode(T, ff, G, lexerTokens);
-
+      parseTree *root = parseInputSourceCode(T, ff, G, inputFile);
+      printParseTree(root, outputFile);
+      printf("Source Code Parsed and parse tree printed into %s\n", argv[2]);
       break;
     case 4:
-      printf("4\n");
+      printf("==== Parsing... ====\n");
+      FILE *inptFile = fopen(argv[1], "r");
+      clock_t start_time, end_time;
+      start_time = clock();
+      parseTree *pt = parseInputSourceCode(T, ff, G, inptFile);
+      end_time = clock();
+      printf("Source Code Parsed");
+      printf("Time Taken to Parse: %ld\n", end_time - start_time);
+      printf("Time Taken to Parse (seconds): %lf\n",
+             (float)(end_time - start_time) / CLOCKS_PER_SEC);
       break;
     default:
       printf("Invalid Input - Exiting!\n");
