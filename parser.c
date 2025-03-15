@@ -19,8 +19,7 @@ void createParseTable(FirstFollow F, table *T) {
       for (int j = 0; j < F.follow_count[i]; j++) {
         T->table[i][F.follow[i][j]] = F.follow_rule[i];
       }
-    }
-    else {
+    } else {
       for (int j = 0; j < F.follow_count[i]; j++) {
         if (T->table[i][F.follow[i][j]] == -1) {
           T->table[i][F.follow[i][j]] = -2;
@@ -90,7 +89,10 @@ parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G,
           continue;
         } else {
           oldLineNo = a->line;
-          printf("Line %d: Syntax Error. The token %s for lexeme %s does not match with the expected token %s\n", a->line, getTokenName(a->type), a->lexeme, getTokenName(X->var.t));
+          printf("Line %d: Syntax Error. The token %s for lexeme %s does not "
+                 "match with the expected token %s\n",
+                 a->line, getTokenName(a->type), a->lexeme,
+                 getTokenName(X->var.t));
           free(X);
           symbolStack[symbolStackTop] = NULL;
           symbolStackTop--;
@@ -106,16 +108,20 @@ parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G,
           continue;
         } else {
           oldLineNo = a->line;
-          printf("Line %d: Syntax Error. Invalid token %s encountered with value %s stack top %s\n", a->line, getTokenName(a->type), a->lexeme, getNonTerminal(nt));
+          printf("Line %d: Syntax Error. Invalid token %s encountered with "
+                 "value %s stack top %s\n",
+                 a->line, getTokenName(a->type), a->lexeme, getNonTerminal(nt));
           lookAheadPointer++;
         }
       } else if (rule_no == -2) {
         if (oldLineNo == a->line) {
-          lookAheadPointer++; 
+          lookAheadPointer++;
           continue;
         } else {
           oldLineNo = a->line;
-          printf("Line %d: Syntax Error. Invalid token %s encountered with value %s stack top %s\n", a->line, getTokenName(a->type), a->lexeme, getNonTerminal(nt));
+          printf("Line %d: Syntax Error. Invalid token %s encountered with "
+                 "value %s stack top %s\n",
+                 a->line, getTokenName(a->type), a->lexeme, getNonTerminal(nt));
           free(X);
           symbolStack[symbolStackTop] = NULL;
           symbolStackTop--;
