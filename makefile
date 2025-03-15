@@ -7,7 +7,7 @@
 #   Dev Chheda           : 2022A7PS0134P 
 
 exec: lexer.o trie.o string.o utils.o parser.o driver.o
-	gcc -o exec driver.o lexer.o parser.o string.o trie.o utils.o
+	gcc -o stage1exe driver.o lexer.o parser.o string.o trie.o utils.o
 lexer.o: lexer.c lexer.h lexerDef.h
 	gcc -c lexer.c
 
