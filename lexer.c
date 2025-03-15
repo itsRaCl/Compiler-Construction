@@ -1,7 +1,6 @@
 #include "lexer.h"
 #include "string.h"
 #include "trie.h"
-// #include "vector.h"
 #include <stdbool.h>
 #include <stdlib.h>
 
