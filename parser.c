@@ -29,10 +29,19 @@ void createParseTable(FirstFollow F, table *T) {
   }
 }
 
-parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G,
-                                vector *input) {
+parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G, FILE *fp) {
   grammar_element *symbolStack[200];
   parseTree *treeNodeStack[200];
+  twinBuffer B = (twinBuffer)malloc(sizeof(TWIN_BUFFER));
+  for (int i = 0; i < 2 * BUFFER_SIZE; i++) {
+    B->buffer[i] = '\0';
+  }
+  B->index = 2 * BUFFER_SIZE - 1;
+  B->line = 1;
+  populate_buffer(B, fp);
+  B->index = 0;
+  populate_buffer(B, fp);
+  initializeLookupTable();
 
   int symbolStackTop = 0;
   int treeNodeStackTop = 0;
@@ -62,10 +71,9 @@ parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G,
   symbolStack[symbolStackTop] = program;
 
   // Following Naming in Slides
-  while (lookAheadPointer < input->size && symbolStackTop >= 0) {
-    // printf("%d\n", lookAheadPointer);
+  tokenInfo a = nextToken(B, fp);
+  while (B->buffer[B->index] != '\0' && symbolStackTop >= 0) {
     grammar_element *X = symbolStack[symbolStackTop];
-    TOKEN *a = get(input, lookAheadPointer);
 
     if (X->terminal) {
       if (X->var.t == DOLLAR && a->type == DOLLAR) {
@@ -83,9 +91,11 @@ parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G,
         symbolStackTop--;
         treeNodeStackTop--;
         lookAheadPointer++;
+        a = nextToken(B, fp);
       } else {
         if (oldLineNo == a->line) {
           lookAheadPointer++;
+          a = nextToken(B, fp);
           continue;
         } else {
           oldLineNo = a->line;
@@ -105,6 +115,7 @@ parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G,
       if (rule_no == -1) {
         if (oldLineNo == a->line) {
           lookAheadPointer++;
+          a = nextToken(B, fp);
           continue;
         } else {
           oldLineNo = a->line;
@@ -112,10 +123,12 @@ parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G,
                  "value %s stack top %s\n",
                  a->line, getTokenName(a->type), a->lexeme, getNonTerminal(nt));
           lookAheadPointer++;
+          a = nextToken(B, fp);
         }
       } else if (rule_no == -2) {
         if (oldLineNo == a->line) {
           lookAheadPointer++;
+          a = nextToken(B, fp);
           continue;
         } else {
           oldLineNo = a->line;
@@ -227,23 +240,23 @@ void printParseTree(parseTree *PT, FILE *outfile) {
 }
 
 int main() {
-  FILE *fp = fopen("Lexer_Test/t6.txt", "r");
+  FILE *fp = fopen("Lexer_Test/testcase8.txt", "r");
   if (fp == NULL) {
     printf("Error: Unable to open testcase file\n");
     return 1;
   }
-  vector *input = getAllTokens(fp);
-  if (input == NULL) {
-    printf("Error: Token extraction failed\n");
-    fclose(fp);
-    return 1;
-  }
+  /*vector *input = getAllTokens(fp);*/
+  /*if (input == NULL) {*/
+  /*printf("Error: Token extraction failed\n");*/
+  /*fclose(fp);*/
+  /*return 1;*/
+  /*}*/
 
-  // add dollar at the end of input
-  tokenInfo dollarToken;
-  dollarToken = (tokenInfo)malloc(sizeof(TOKEN));
-  dollarToken->type = DOLLAR;
-  push(input, dollarToken);
+  /*// add dollar at the end of input*/
+  /*tokenInfo dollarToken;*/
+  /*dollarToken = (tokenInfo)malloc(sizeof(TOKEN));*/
+  /*dollarToken->type = DOLLAR;*/
+  /*push(input, dollarToken);*/
 
   table T;
 
@@ -257,7 +270,7 @@ int main() {
   // for(int i=0;i<rule.element_count;i++){
   //   printf("%d ",rule.elements[i].var);
   // }
-  parseTree *root = parseInputSourceCode(T, F, G, input);
+  parseTree *root = parseInputSourceCode(T, F, G, fp);
   if (root == NULL) {
     printf("Error: Parsing failed\n");
     fclose(fp);
