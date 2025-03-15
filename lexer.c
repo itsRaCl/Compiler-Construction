@@ -776,18 +776,11 @@ void getStream(FILE *fp) {
   free(B);
 }
 
-void removeComments(char *testcaseFile, char *cleanFile) {
+void removeComments(char *testcaseFile) {
   FILE *testcaseFPTR = fopen(testcaseFile, "r");
 
   if (testcaseFPTR == NULL) {
     printf("Error: Unable to open testcase file %s\n", testcaseFile);
-    return;
-  }
-
-  FILE *cleanflieFPTR = fopen(cleanFile, "w");
-
-  if (cleanflieFPTR == NULL) {
-    printf("Error: Unable to open clean file %s\n", cleanFile);
     return;
   }
 
@@ -800,15 +793,14 @@ void removeComments(char *testcaseFile, char *cleanFile) {
       if (ch == '\n') {
         ch = fgetc(testcaseFPTR);
       }
-      fputc('\n', cleanflieFPTR);
+      printf("\n");
 
     } else {
-      fputc(ch, cleanflieFPTR);
+      printf("%c", ch);
       ch = fgetc(testcaseFPTR);
     }
   }
   fclose(testcaseFPTR);
-  fclose(cleanflieFPTR);
 }
 
 // int main()
