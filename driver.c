@@ -5,7 +5,7 @@
   Ritvik Singh         : 2022A7PS0045P
   Madhav Gupta         : 2022A7PS0078P
   Clerk Raj Anuj       : 2022A7PS0080P
-  Dev Chheda           : 2022A7PS0134P 
+  Dev Chheda           : 2022A7PS0134P
 */
 #include "lexer.h"
 #include "parser.h"
@@ -53,6 +53,11 @@ int main(int argc, char *argv[]) {
       printf("==== Parsing... ====\n");
       FILE *inputFile = fopen(argv[1], "r");
       FILE *outputFile = fopen(argv[2], "w");
+      if (inputFile == NULL) {
+        printf("Invalid Input File!\n");
+        return 1;
+      }
+
       parseTree *root = parseInputSourceCode(T, ff, G, inputFile);
       printParseTree(root, outputFile);
       printf("Source Code Parsed and parse tree printed into %s\n", argv[2]);
@@ -62,6 +67,10 @@ int main(int argc, char *argv[]) {
     case 4:
       printf("==== Parsing... ====\n");
       FILE *inptFile = fopen(argv[1], "r");
+      if (inptFile == NULL) {
+        printf("Invalid Input File!\n");
+        return 1;
+      }
       clock_t start_time, end_time;
       start_time = clock();
       parseTree *pt = parseInputSourceCode(T, ff, G, inptFile);
