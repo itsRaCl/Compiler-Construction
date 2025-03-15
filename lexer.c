@@ -698,51 +698,6 @@ tokenInfo nextToken(twinBuffer B, FILE *fp) {
   }
 }
 
-// Vector getAllTokens(FILE *fp) {
-//   Vector tokens = createVector();
-//   twinBuffer B = (twinBuffer)malloc(sizeof(TWIN_BUFFER));
-//   for (int i = 0; i < 2 * BUFFER_SIZE; i++) {
-//     B->buffer[i] = '\0';
-//   }
-//   B->index = 2 * BUFFER_SIZE - 1;
-//   B->line = 1;
-//   populate_buffer(B, fp);
-//   B->index = 0;
-//   populate_buffer(B, fp);
-//   initializeLookupTable();
-//   while (B->buffer[B->index] != '\0') {
-//     int before = B->index;
-//     tokenInfo token = getNextToken(B, fp);
-//     if (token != NULL) {
-//       if (token->type == NEWLINE || token->type == TK_COMMENT) {
-//         B->line++;
-//       }
-//       if (token->type == TK_COMMENT) {
-//         continue;
-//       }
-//       if (token->type != NULL_TOKEN && token->type != NEWLINE &&
-//           token->type != EXIT_TOKEN && token->type != BLANK) {
-//         if (handle_valid_error(token))
-//           push(tokens, token);
-//       }
-//     }
-//     int after = B->index;
-//     if ((before < BUFFER_SIZE && after >= BUFFER_SIZE) ||
-//         (before >= BUFFER_SIZE && after < BUFFER_SIZE)) {
-//       populate_buffer(B, fp);
-//     }
-//   }
-//   free(B);
-//   return tokens;
-// }
-
-// void printVector(Vector v) {
-//   for (int i = 0; i < v->size; i++) {
-//     printf("Line no. %d Lexeme %s Token %s\n", v->tokens[i]->line,
-//            v->tokens[i]->lexeme, getTokenName(v->tokens[i]->type));
-//   }
-// }
-
 void getStream(FILE *fp) {
   twinBuffer B = (twinBuffer)malloc(sizeof(TWIN_BUFFER));
   for (int i = 0; i < 2 * BUFFER_SIZE; i++) {
@@ -806,17 +761,3 @@ void removeComments(char *testcaseFile) {
   }
   fclose(testcaseFPTR);
 }
-
-// int main()
-// {
-//     FILE* fp = fopen("Lexer_Test/t6.txt", "r");
-//     if(fp==NULL)
-//     {
-//         printf("Error: Unable to open testcase file\n");
-//         return 1;
-//     }
-//     // getStream(fp);
-//     getAllTokens(fp);
-//     fclose(fp);
-//     return 0;
-// }

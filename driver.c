@@ -43,10 +43,12 @@ int main(int argc, char *argv[]) {
     case 3:
       printf("==== Parsing... ====\n");
       FILE *inputFile = fopen(argv[1], "r");
-      FILE *outputFile = fopen(argv[2], "r");
+      FILE *outputFile = fopen(argv[2], "w");
       parseTree *root = parseInputSourceCode(T, ff, G, inputFile);
       printParseTree(root, outputFile);
       printf("Source Code Parsed and parse tree printed into %s\n", argv[2]);
+      fclose(inputFile);
+      fclose(outputFile);
       break;
     case 4:
       printf("==== Parsing... ====\n");
@@ -59,6 +61,7 @@ int main(int argc, char *argv[]) {
       printf("Time Taken to Parse: %ld\n", end_time - start_time);
       printf("Time Taken to Parse (seconds): %lf\n",
              (float)(end_time - start_time) / CLOCKS_PER_SEC);
+      fclose(inptFile);
       break;
     default:
       printf("Invalid Input - Exiting!\n");

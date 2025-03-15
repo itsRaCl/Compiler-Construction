@@ -79,6 +79,7 @@ void computeFirstRec(FirstFollow *ff, NON_TERMINAL nt, grammar G,
 }
 
 void followAdd(FirstFollow *ff, NON_TERMINAL nt, TOKEN_TYPE t) {
+  // helper function to add a token to the first set of non terminal nt
   for (int i = 0; i < ff->follow_count[nt]; i++) {
     if (ff->follow[nt][i] == t) {
       return;
@@ -110,6 +111,9 @@ void followHelper(FirstFollow *ff, grammar_rule rule, NON_TERMINAL LHS,
     NON_TERMINAL nt = rule.elements[i].var.nt;
 
     int j;
+    // adding first set for all non terminals that lie after current non
+    // terminal in rule, until a terminal discovered or first set of non
+    // terminal does not contain epsillon
     for (j = i + 1; j < rule.element_count; j++) {
       if (rule.elements[j].terminal) {
         followAdd(ff, nt, rule.elements[j].var.t);
@@ -130,6 +134,8 @@ void followHelper(FirstFollow *ff, grammar_rule rule, NON_TERMINAL LHS,
     }
   }
 
+  // if last element of a rule is a non terminal then for that non terminal
+  // follow set will contain follow of LHS
   if (!(rule.elements[rule.element_count - 1].terminal)) {
     followDepAdd(rule.elements[rule.element_count - 1].var.nt, LHS, followDep,
                  depCount);
@@ -153,51 +159,6 @@ void clearDependency(NON_TERMINAL nt, NON_TERMINAL **followDep, int *depCount,
       followAdd(ff, nt, ff->follow[dep][j]);
     }
   }
-}
-
-FirstFollow computeFirstFollowSet(grammar G) {
-  FirstFollow ff;
-
-  bool firstComputed[NON_TERMINAL_COUNT];
-  NON_TERMINAL **followDep;
-  followDep =
-      (NON_TERMINAL **)malloc(sizeof(NON_TERMINAL *) * NON_TERMINAL_COUNT);
-
-  int depCount[NON_TERMINAL_COUNT];
-
-  for (int i = 0; i < NON_TERMINAL_COUNT; i++) {
-    ff.first_count[i] = 0;
-    ff.follow_count[i] = 0;
-    ff.first_has_epsillon[i] = false;
-    ff.follow_rule[i] = -1;
-    firstComputed[i] = false;
-    depCount[i] = 0;
-    followDep[i] = (NON_TERMINAL *)calloc(MAX_RULE_SIZE, sizeof(NON_TERMINAL));
-  }
-
-  // Computing First Set for all Non Terminals
-  for (int i = 0; i < NON_TERMINAL_COUNT; i++) {
-    computeFirstRec(&ff, (NON_TERMINAL)i, G, firstComputed);
-  }
-
-  // Base Follow set for start symbol '<program>'
-  ff.follow[NT_PROGRAM][0] = DOLLAR;
-  ff.follow_count[NT_PROGRAM] = 1;
-
-  // Computing Follow Set for all Non Terminals
-  for (int i = 0; i < NON_TERMINAL_COUNT; i++) {
-    for (int j = 0; j < G.rule_count[i]; j++) {
-      followHelper(&ff, G.rules[i][j], (NON_TERMINAL)i, followDep, depCount);
-    }
-  }
-
-  for (int i = 0; i < NON_TERMINAL_COUNT; i++) {
-    if (depCount[i] > 0) {
-      clearDependency(i, followDep, depCount, &ff);
-    }
-  }
-
-  return ff;
 }
 
 char *getNonTerminal(NON_TERMINAL nt) {
