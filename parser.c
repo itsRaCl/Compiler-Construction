@@ -317,6 +317,14 @@ void printParseTree(parseTree *PT, FILE *outfile) {
   if (PT == NULL) {
     return;
   }
+  static int flag = 1;
+  if (flag) {
+    flag = 0;
+    // print this -> "lexeme CurrentNodeLineno tokenName valueIfNumber parentNodeSymbol isLeafNode(yes/no) NodeSymbol"
+    fprintf(outfile, "%-30s%-30s%-30s%-30s%-30s%-30s%-30s\n\n", "lexeme",
+            "lineno", "token", "valueIfNumber", "parentNodeSymbol",
+            "isLeafNode(yes/no)", "NodeSymbol");
+  }
   if (PT->no_of_children != 0 && PT->children[0] != NULL) {
     printParseTree(PT->children[0], outfile);
   }
