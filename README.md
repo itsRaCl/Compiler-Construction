@@ -1,18 +1,12 @@
-# Compiler-Construction
+# Compiler-Construction: Group 43
 
-  Group Number: 43
-
-  NAME                 : ID
-
-  Gyanesh Roy Bhowmik  : 2022A7PS0035P
-
-  Ritvik Singh         : 2022A7PS0045P
-
-  Madhav Gupta         : 2022A7PS0078P
-
-  Clerk Raj Anuj       : 2022A7PS0080P
-  
-  Dev Chheda           : 2022A7PS0134P 
+  |NAME| ID|
+  |----|---|
+  |Gyanesh Roy Bhowmik| 2022A7PS0035P|
+  |Ritvik Singh| 2022A7PS0045P|
+  |Madhav Gupta| 2022A7PS0078P|
+  |Clerk Raj Anuj| 2022A7PS0080P|
+  |Dev Chheda| 2022A7PS0134P|
  
 # How To Compile & Execute
 - Run the make command to generate the `stage1exe` file
