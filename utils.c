@@ -924,8 +924,3 @@ grammar initializeGrammar() {
   G.has_epsillon[NT_A] = false;
   return G;
 }
-// int main() {
-//   grammar G = initializeGrammar();
-//   FirstFollow ff = computeFirstFollowSet(G);
-//   return 0;
-// }
