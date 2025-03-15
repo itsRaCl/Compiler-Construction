@@ -4,3 +4,5 @@ run_parser
 run_lexer
 exec
 parse.txt
+.vscode/
+stage1exe
