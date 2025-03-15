@@ -2,7 +2,6 @@
 #define PARSER_DEF
 
 #include "lexerDef.h"
-#include "vector.h"
 
 #define NON_TERMINAL_COUNT 53
 #define MAX_RULE_SIZE 15

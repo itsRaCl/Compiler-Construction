@@ -136,6 +136,8 @@ parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G, FILE *fp) {
     // if top of the stack is a terminal
     if (X->terminal) {
       if (X->var.t == DOLLAR && a->type == DOLLAR) {
+        // if top of stack is dollar and input token is dollar
+        // parsing is complete
         break;
       } else if (X->var.t == a->type) {
         // top of stack terminal matches with input token
@@ -273,6 +275,12 @@ parseTree *parseInputSourceCode(table T, FirstFollow F, grammar G, FILE *fp) {
         }
       }
     }
+  }
+  // check if the input has been completely parsed
+  // and symbol stack is DOLLAR
+  if (!(symbolStackTop == 0 && symbolStack[symbolStackTop]->var.t == DOLLAR &&
+        a->type == DOLLAR)) {
+    error_encountered = true;
   }
   // freeing memory used by twin buffer
   free(B);
